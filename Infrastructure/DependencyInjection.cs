@@ -1,4 +1,6 @@
-﻿using Infrastructure.Caching;
+﻿using Application.Features.Categories.Queries;
+using Infrastructure.Caching;
+using Infrastructure.Features.Categories;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,7 @@ public static class DependencyInjection
         serviceCollection.ConfigureDatabaseConnection();
         serviceCollection.ConfigureRedis();
         serviceCollection.ConfigureCachingServices();
+        serviceCollection.ConfigureRepositories();
     }
 
     public static void AddInfrastructureLayer(this IHostBuilder hostBuilder)
@@ -50,5 +53,10 @@ public static class DependencyInjection
     private static void ConfigureCachingServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddTransient<ICachingService, CachingService>();
+    }
+
+    private static void ConfigureRepositories(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
     }
 }

@@ -1,4 +1,5 @@
 using Application;
+using Carter;
 using Infrastructure;
 using Serilog;
 
@@ -13,6 +14,8 @@ builder.Host.AddInfrastructureLayer();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCarter();
+
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -22,5 +25,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapCarter();
 app.UseSerilogRequestLogging();
 app.Run();

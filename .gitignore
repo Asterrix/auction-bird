@@ -400,3 +400,6 @@ FodyWeavers.xsd
 
 # Environment files
 /Presentation/env/
+
+# Migrations
+/Infrastructure/Migrations/
