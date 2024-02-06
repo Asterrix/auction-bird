@@ -1,4 +1,9 @@
+using Application;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Services
+builder.Services.AddApplicationLayer();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
