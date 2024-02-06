@@ -1,9 +1,12 @@
 using Application;
+using Infrastructure;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Services
 builder.Services.AddApplicationLayer();
+builder.Services.AddInfrastructureLayer();
+builder.Host.AddInfrastructureLayer();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

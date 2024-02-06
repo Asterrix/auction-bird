@@ -1,0 +1,25 @@
+﻿version: "3.8"
+
+name: "auction-bird"
+services:
+  database:
+    container_name: postgres
+    image: postgres:16.1-alpine
+    restart: unless-stopped
+    env_file:
+      - ./env/postgres.env
+    volumes:
+      - type: volume
+        source: postgres_data
+        target: /var/lib/postgresql/data
+    ports:
+      - "5432:5432" # If you have a local postgres instance running, you may need to change host port
+    networks:
+      - ab_network
+
+
+networks:
+  ab_network:
+
+volumes:
+  postgres_data:
