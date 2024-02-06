@@ -1,10 +1,12 @@
 using Application;
 using Infrastructure;
+using Serilog;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Services
 builder.Services.AddApplicationLayer();
+
 builder.Services.AddInfrastructureLayer();
 builder.Host.AddInfrastructureLayer();
 
@@ -20,3 +22,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseSerilogRequestLogging();
+app.Run();

@@ -2,6 +2,16 @@
 
 name: "auction-bird"
 services:
+  logger:
+    container_name: logger
+    image: datalust/seq:latest
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "8081:80"
+    networks:
+      - ab_network
+    
   database:
     container_name: postgres
     image: postgres:16.1-alpine
@@ -16,7 +26,6 @@ services:
       - "5432:5432" # If you have a local postgres instance running, you may need to change host port
     networks:
       - ab_network
-
 
 networks:
   ab_network:
