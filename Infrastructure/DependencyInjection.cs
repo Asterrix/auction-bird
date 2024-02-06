@@ -1,4 +1,5 @@
-﻿using Infrastructure.Persistence;
+﻿using Infrastructure.Caching;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,8 @@ public static class DependencyInjection
     public static void AddInfrastructureLayer(this IServiceCollection serviceCollection)
     {
         serviceCollection.ConfigureDatabaseConnection();
+        serviceCollection.ConfigureRedis();
+        serviceCollection.ConfigureCachingServices();
     }
 
     public static void AddInfrastructureLayer(this IHostBuilder hostBuilder)
@@ -41,5 +44,24 @@ public static class DependencyInjection
         {
             loggerConfig.ReadFrom.Configuration(context.Configuration);
         });
+    }
+
+    private static void ConfigureRedis(this IServiceCollection serviceCollection)
+    {
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "env"))
+            .AddJsonFile("redis.json")
+            .AddEnvironmentVariables()
+            .Build();
+
+        serviceCollection.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = config.GetSection("Redis").Value;
+        });
+    }
+
+    private static void ConfigureCachingServices(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddTransient<ICachingService, CachingService>();
     }
 }

@@ -11,6 +11,21 @@ services:
       - "8081:80"
     networks:
       - ab_network
+        
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: unless-stopped
+    env_file:
+      - ./env/redis.env
+    ports:
+      - "6379:6379"
+    networks:
+      - ab_network
+    volumes:
+      - type: volume
+        source: redis_data
+        target: /data
     
   database:
     container_name: postgres
@@ -31,4 +46,5 @@ networks:
   ab_network:
 
 volumes:
+  redis_data:
   postgres_data:
