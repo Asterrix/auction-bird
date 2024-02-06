@@ -2,6 +2,22 @@
 
 name: "auction-bird"
 services:
+  server:
+    container_name: server
+    build:
+      context: .
+      dockerfile: ./Presentation/Dockerfile
+      target: development
+    env_file:
+      - ./Presentation/env/server.env
+    depends_on:
+      - database
+      - redis
+    ports:
+      - "8080:8080"
+    networks:
+      - ab_network
+  
   logger:
     container_name: logger
     image: datalust/seq:latest
@@ -17,7 +33,7 @@ services:
     image: redis:latest
     restart: unless-stopped
     env_file:
-      - ./env/redis.env
+      - ./Presentation/env/redis.env
     ports:
       - "6379:6379"
     networks:
@@ -32,7 +48,7 @@ services:
     image: postgres:16.1-alpine
     restart: unless-stopped
     env_file:
-      - ./env/postgres.env
+      - ./Presentation/env/postgres.env
     volumes:
       - type: volume
         source: postgres_data

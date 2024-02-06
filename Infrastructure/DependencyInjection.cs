@@ -24,11 +24,30 @@ public static class DependencyInjection
 
     private static void ConfigureDatabaseConnection(this IServiceCollection serviceCollection)
     {
-        IConfigurationRoot config = new ConfigurationBuilder()
-            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "env"))
-            .AddJsonFile("postgres.json")
-            .AddEnvironmentVariables()
-            .Build();
+        IConfigurationRoot config;
+
+        try
+        {
+            // This is for local development
+            string basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Presentation", "env");
+            config = new ConfigurationBuilder()
+                .SetBasePath(basePath)
+                .AddJsonFile("postgres.json")
+                .AddEnvironmentVariables()
+                .Build();
+        }
+
+        // If the above fails, then we are in a docker container
+        catch (Exception)
+        {
+            // This is for docker container environment
+            const string basePath = "/app/env";
+            config = new ConfigurationBuilder()
+                .SetBasePath(basePath)
+                .AddJsonFile("postgres.json")
+                .AddEnvironmentVariables()
+                .Build();
+        }
 
         serviceCollection.AddDbContext<DatabaseContext>(options =>
         {
@@ -48,15 +67,9 @@ public static class DependencyInjection
 
     private static void ConfigureRedis(this IServiceCollection serviceCollection)
     {
-        IConfigurationRoot config = new ConfigurationBuilder()
-            .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "env"))
-            .AddJsonFile("redis.json")
-            .AddEnvironmentVariables()
-            .Build();
-
         serviceCollection.AddStackExchangeRedisCache(options =>
         {
-            options.Configuration = config.GetSection("Redis").Value;
+            options.Configuration = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
         });
     }
 
