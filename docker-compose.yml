@@ -2,6 +2,19 @@
 
 name: "auction-bird"
 services:
+  client:
+    container_name: client
+    build:
+      context: ./Presentation/ClientApp
+      target: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Presentation/ClientApp:/app
+      - /app/node_modules
+    networks:
+      - ab_network
+  
   server:
     container_name: server
     build:
