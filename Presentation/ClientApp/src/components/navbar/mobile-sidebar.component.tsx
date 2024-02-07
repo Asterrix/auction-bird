@@ -93,9 +93,9 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = (
                           aria-labelledby={`${section.id}-heading-mobile`}
                           className="mt-6 flex flex-col space-y-6"
                         >
-                          {section.items.map((item) => (
+                          {section.subcategories.map((item) => (
                             <li key={item.name} className="flow-root">
-                              <a href={item.href} className="-m-2 block p-2 text-gray-500">
+                              <a href="#" className="-m-2 block p-2 text-gray-500">
                                 {item.name}
                               </a>
                             </li>
