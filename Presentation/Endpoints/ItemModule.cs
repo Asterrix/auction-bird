@@ -1,7 +1,9 @@
 ﻿using Application.Features.Items.Mapper;
 using Application.Features.Items.Queries.ListItems;
+using Application.Pagination;
 using Carter;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Endpoints;
 
@@ -12,9 +14,10 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
         app.MapGet("items", ListItems);
     }
 
-    private static async Task<IResult> ListItems(ISender sender)
+    private static async Task<IResult> ListItems(ISender sender, [FromQuery] int pageNumber, [FromQuery] int pageSize)
     {
-        List<ItemSummary> items = await sender.Send(new ListItemsQuery());
+        Pageable pageable = Pageable.Of(pageNumber, pageSize);
+        Page<ItemSummary> items = await sender.Send(new ListItemsQuery(pageable));
 
         return Results.Ok(items);
     }
