@@ -1,7 +1,8 @@
-﻿using Application.Caching;
 using Application.Features.Categories.Queries;
+using Application.Features.Items;
 using Infrastructure.Caching;
 using Infrastructure.Features.Categories;
+using Infrastructure.Features.Items;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,5 +60,6 @@ public static class DependencyInjection
     private static void ConfigureRepositories(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
+        serviceCollection.AddScoped<IItemRepository, ItemRepository>();
     }
 }
