@@ -1,5 +1,6 @@
 ﻿using Application.Features.Items;
 using Application.Features.Items.Mapper;
+using Application.Pagination;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,12 +8,18 @@ namespace Infrastructure.Features.Items;
 
 public sealed class ItemRepository(DatabaseContext context) : IItemRepository
 {
-    public async Task<List<ItemSummary>> ListAllAsync(CancellationToken cancellationToken = default)
+    public async Task<Page<ItemSummary>> ListAllAsync(Pageable pageable, CancellationToken cancellationToken = default)
     {
-        return await context.Items
+        List<ItemSummary> itemSummaries = await context.Items
             .OrderBy(i => i.Name)
             .Select(item => new ItemSummary(item.Id, item.Name, item.InitialPrice, item.Images.First()))
+            .Skip(pageable.Skip)
+            .Take(pageable.Size)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+
+        int totalItems = await context.Items.CountAsync(cancellationToken);
+
+        return new Page<ItemSummary>(itemSummaries, pageable, totalItems);
     }
 }
