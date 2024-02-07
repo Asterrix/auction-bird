@@ -1,4 +1,5 @@
 ﻿using Domain.Categories;
+using Domain.Items;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
@@ -12,4 +13,6 @@ public sealed class DatabaseContext(DbContextOptions options) : DbContext(option
     }
 
     public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<Item> Items { get; set; } = null!;
+    public DbSet<ItemImage> ItemImages { get; set; } = null!;
 }
