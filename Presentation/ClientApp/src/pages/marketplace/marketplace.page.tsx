@@ -5,14 +5,15 @@ import {FunnelIcon, MinusIcon, PlusIcon} from "@heroicons/react/20/solid";
 import {apiService} from "../../services/api.service.ts";
 import {Category} from "../../services/category.service.ts";
 import {ItemSummary} from "../../services/item.service.ts";
-import {defaultPagination} from "../../services/pagination.service.ts";
 import {Page} from "../../utils/types/pagination/page.type.ts";
+import InfiniteScroll from "react-infinite-scroll-component";
+import {Pageable} from "../../utils/types/pagination/pageable.type.ts";
 
 export const MarketplacePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<Page<ItemSummary>>();
-  const pageable = defaultPagination();
+  const pageable: Pageable = {page: 1, size: 9};
 
   useEffect(() => {
     apiService.categories.getCategories()
@@ -33,6 +34,24 @@ export const MarketplacePage = () => {
         console.error(error);
       });
   }, []);
+
+  const loadMoreItems = () => {
+    pageable.page++;
+
+    apiService.items.getItems(pageable)
+      .then((response) => {
+        setItems({
+          elements: items?.elements.concat(response.elements) || response.elements,
+          isEmpty: response.isEmpty,
+          totalPages: response.totalPages,
+          totalElements: response.totalElements,
+          isLastPage: response.isLastPage
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   return (
     <div className="bg-white">
@@ -263,6 +282,15 @@ export const MarketplacePage = () => {
                     <p className="mt-2 font-medium text-indigo-500">${item.initialPrice}</p>
                   </a>
                 ))}
+                {items && (
+                  <InfiniteScroll
+                    next={loadMoreItems}
+                    hasMore={!items.isLastPage}
+                    loader={<p>Loading...</p>}
+                    dataLength={0}>
+                    <div className="hidden"></div>
+                  </InfiniteScroll>
+                )}
               </div>
             </div>
           </section>
