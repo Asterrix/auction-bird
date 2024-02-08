@@ -20,10 +20,10 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
     private static async Task<IResult> ListItems(
         ISender sender,
         ICachingService cachingService,
-        [FromQuery] int pageNumber,
-        [FromQuery] int pageSize)
+        [FromQuery] int page,
+        [FromQuery] int size)
     {
-        string cacheKey = $"items_list_{pageNumber}_{pageSize}";
+        string cacheKey = $"items_list_{page}_{size}";
 
         Page<ItemSummary>? cachedItems = await cachingService.GetAsync<Page<ItemSummary>>(cacheKey, PageConverter<ItemSummary>.GetSettings());
         if (cachedItems is not null)
@@ -31,7 +31,7 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
             return Results.Ok(cachedItems);
         }
 
-        Pageable pageable = Pageable.Of(pageNumber, pageSize);
+        Pageable pageable = Pageable.Of(page, size);
         Page<ItemSummary> items = await sender.Send(new ListItemsQuery(pageable));
 
         DistributedCacheEntryOptions cacheOptions = new CacheOptionsBuilder()

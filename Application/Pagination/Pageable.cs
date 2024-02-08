@@ -13,13 +13,13 @@ public sealed class Pageable
     private const int DefaultPageSize = 9;
 
     // Properties
-    public int Number { get; }
+    public int Page { get; }
     public int Size { get; }
-    public int Skip => (Number - 1) * Size;
+    public int Skip => (Page - 1) * Size;
 
-    private Pageable(int number, int size)
+    private Pageable(int page, int size)
     {
-        Number = number;
+        Page = page;
         Size = size;
     }
 

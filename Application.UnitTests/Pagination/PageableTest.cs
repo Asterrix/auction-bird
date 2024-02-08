@@ -56,7 +56,7 @@ public class PageableTest
 
         Pageable pageable = Pageable.Of(pageNumber, pageSize);
 
-        Assert.Equal(pageNumber, pageable.Number);
+        Assert.Equal(pageNumber, pageable.Page);
         Assert.Equal(pageSize, pageable.Size);
     }
 

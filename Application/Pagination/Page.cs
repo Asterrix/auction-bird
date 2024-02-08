@@ -23,6 +23,6 @@ public sealed class Page<T>
         TotalElements = totalElements;
         TotalPages = (int)Math.Ceiling(totalElements / (double)pageable.Size);
         IsEmpty = !elements.Any();
-        IsLastPage = pageable.Number >= TotalPages;
+        IsLastPage = pageable.Page >= TotalPages;
     }
 }
