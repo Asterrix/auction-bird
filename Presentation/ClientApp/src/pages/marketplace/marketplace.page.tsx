@@ -2,7 +2,6 @@
 import {Dialog, Disclosure, Transition} from "@headlessui/react";
 import {XMarkIcon} from "@heroicons/react/24/outline";
 import {FunnelIcon, MinusIcon, PlusIcon} from "@heroicons/react/20/solid";
-import {apiCaller} from "../../utils/api-caller.ts";
 import {apiService} from "../../services/api.service.ts";
 import {Category} from "../../services/category.service.ts";
 import {ItemSummary} from "../../services/item.service.ts";
@@ -16,25 +15,23 @@ export const MarketplacePage = () => {
   const pageable = defaultPagination();
 
   useEffect(() => {
-    apiCaller(apiService.categories.getCategories(), {
-      onSuccess: (response: Category[]) => {
+    apiService.categories.getCategories()
+      .then((response) => {
         setCategories(response);
-      },
-      onError: (error: Error) => {
+      })
+      .catch((error) => {
         console.error(error);
-      }
-    });
+      });
   }, []);
 
   useEffect(() => {
-    apiCaller(apiService.items.getItems(pageable), {
-      onSuccess: (response: Page<ItemSummary>) => {
+    apiService.items.getItems(pageable)
+      .then((response) => {
         setItems(response);
-      },
-      onError: (error: Error) => {
+      })
+      .catch((error) => {
         console.error(error);
-      }
-    });
+      });
   }, []);
 
   return (

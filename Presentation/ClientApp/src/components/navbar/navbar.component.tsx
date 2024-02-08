@@ -4,7 +4,6 @@ import {Popover, Transition} from "@headlessui/react";
 import {classNames} from "../../utils/tailwind/class-names.utils.ts";
 import {SearchBar} from "../searchbar/searchbar.component.tsx";
 import {Bars3Icon} from "@heroicons/react/24/outline";
-import {apiCaller} from "../../utils/api-caller.ts";
 import {Category} from "../../services/category.service.ts";
 import {apiService} from "../../services/api.service.ts";
 
@@ -46,20 +45,19 @@ export const NavbarComponent = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiCaller(apiService.categories.getCategories(), {
-      onSuccess: (response: Category[]) => {
+    apiService.categories.getCategories()
+      .then((response: Category[]) => {
         setNavigation({
           ...navigation,
           categories: response
         });
-      },
-      onError: (error: Error) => {
+      })
+      .catch((error: Error) => {
         console.error(error);
-      },
-      onCompletion: () => {
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    });
+      });
   }, []);
 
   return (
@@ -120,7 +118,7 @@ export const NavbarComponent = () => {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                           >
-                              <Popover.Panel className="absolute inset-x-0 top-full bg-white text-sm text-gray-500">
+                            <Popover.Panel className="absolute inset-x-0 top-full bg-white text-sm text-gray-500">
                               {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
                               <div className="absolute inset-0 top-1 bg-white shadow" aria-hidden="true"/>
                               {/* Fake border when menu is open */}
