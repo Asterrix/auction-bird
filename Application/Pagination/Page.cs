@@ -2,7 +2,7 @@
 
 public sealed class Page<T>(
     IEnumerable<T> elements,
-    Pageable pageable, 
+    Pageable pageable,
     int totalElements)
 {
     public IEnumerable<T> Elements { get; } = elements;
