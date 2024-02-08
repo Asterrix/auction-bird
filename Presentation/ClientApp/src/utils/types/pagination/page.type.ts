@@ -5,3 +5,5 @@
   isEmpty: boolean;
   isLastPage: boolean;
 }
+
+export type {Page};
