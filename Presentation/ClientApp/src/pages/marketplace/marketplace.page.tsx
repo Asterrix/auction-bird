@@ -5,37 +5,31 @@ import {FunnelIcon, MinusIcon, PlusIcon} from "@heroicons/react/20/solid";
 import {apiCaller} from "../../utils/api-caller.ts";
 import {apiService} from "../../services/api.service.ts";
 import {Category} from "../../services/category.service.ts";
-
-// Dummy data
-const items = [
-  {
-    id: 1,
-    name: "Nomad Pouch",
-    href: "#",
-    price: "$50",
-    availability: "White and Black",
-    imageSrc: "https://tailwindui.com/img/ecommerce-images/category-page-07-product-01.jpg",
-    imageAlt: "White fabric pouch with white zipper, black zipper pull, and black elastic loop.",
-  },
-  {
-    id: 2,
-    name: "Zip Tote Basket",
-    href: "#",
-    price: "$140",
-    availability: "Washed Black",
-    imageSrc: "https://tailwindui.com/img/ecommerce-images/category-page-07-product-02.jpg",
-    imageAlt: "Front of tote bag with washed black canvas body, black straps, and tan leather handles and accents.",
-  },
-];
+import {ItemSummary} from "../../services/item.service.ts";
+import {defaultPagination} from "../../services/pagination.service.ts";
+import {Page} from "../../utils/types/pagination/page.type.ts";
 
 export const MarketplacePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [items, setItems] = useState<Page<ItemSummary>>();
+  const pageable = defaultPagination();
 
   useEffect(() => {
     apiCaller(apiService.categories.getCategories(), {
       onSuccess: (response: Category[]) => {
         setCategories(response);
+      },
+      onError: (error: Error) => {
+        console.error(error);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    apiCaller(apiService.items.getItems(pageable), {
+      onSuccess: (response: Page<ItemSummary>) => {
+        setItems(response);
       },
       onError: (error: Error) => {
         console.error(error);
@@ -258,19 +252,18 @@ export const MarketplacePage = () => {
 
               {/* Item grid */}
               <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-3 lg:gap-x-8">
-                {items.map((item) => (
-                  <a key={item.id} href={item.href} className="group text-sm">
+                {items?.elements.map((item) => (
+                  <a key={item.id} href={item.id} className="group text-sm">
                     <div
                       className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
                       <img
-                        src={item.imageSrc}
-                        alt={item.imageAlt}
+                        src={item.mainImage.imageUrl}
+                        alt={item.name}
                         className="h-full w-full object-cover object-center"
                       />
                     </div>
                     <h3 className="mt-4 font-medium text-gray-900">{item.name}</h3>
-                    <p className="italic text-gray-500">{item.availability}</p>
-                    <p className="mt-2 font-medium text-gray-900">{item.price}</p>
+                    <p className="mt-2 font-medium text-indigo-500">${item.initialPrice}</p>
                   </a>
                 ))}
               </div>
