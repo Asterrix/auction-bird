@@ -10,7 +10,7 @@ public sealed class ItemRepository(DatabaseContext context) : IItemRepository
 {
     public async Task<Page<ItemSummary>> ListAllAsync(Pageable pageable, CancellationToken cancellationToken = default)
     {
-        List<ItemSummary> itemSummaries = await context.Items
+        IEnumerable<ItemSummary> itemSummaries = await context.Items
             .OrderBy(i => i.Name)
             .Select(item => new ItemSummary(item.Id, item.Name, item.InitialPrice, item.Images.First()))
             .Skip(pageable.Skip)
@@ -20,6 +20,6 @@ public sealed class ItemRepository(DatabaseContext context) : IItemRepository
 
         int totalItems = await context.Items.CountAsync(cancellationToken);
 
-        return new Page<ItemSummary>(itemSummaries, pageable, totalItems);
+        return new Page<ItemSummary>(ref itemSummaries, pageable, totalItems);
     }
 }
