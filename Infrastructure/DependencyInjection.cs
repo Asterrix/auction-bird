@@ -1,3 +1,4 @@
+using Application.Caching;
 using Application.Features.Categories.Queries;
 using Application.Features.Items;
 using Infrastructure.Caching;

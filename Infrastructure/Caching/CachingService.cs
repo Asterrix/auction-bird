@@ -20,6 +20,19 @@ public sealed class CachingService(IDistributedCache distributedCache) : ICachin
         );
     }
 
+    public async Task<Option<T>> RetrieveDataFromCache<T>(
+        string key,
+        JsonSerializerSettings jsonSerializerSettings,
+        CancellationToken cancellationToken = default) where T : class
+    {
+        Option<string> cachedData = await distributedCache.GetStringAsync(key, cancellationToken);
+
+        return cachedData.Match(
+            data => JsonConvert.DeserializeObject<T>(data, jsonSerializerSettings),
+            () => Option<T>.None
+        );
+    }
+
     public async Task StoreDataInCache<T>(
         string key,
         T data,
