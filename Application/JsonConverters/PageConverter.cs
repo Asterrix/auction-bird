@@ -1,9 +1,8 @@
 ﻿using Application.Pagination;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
-namespace Presentation.JsonConverters;
+namespace Application.JsonConverters;
 
 internal class PageConverter<T> : JsonConverter
 {
@@ -24,8 +23,6 @@ internal class PageConverter<T> : JsonConverter
 
     public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
-        Log.Information("Performing ReadJson operation in PageConverter.");
-        
         JObject jObject = JObject.Load(reader);
         IEnumerable<T>? elements = jObject["Elements"].ToObject<List<T>>(serializer);
         
