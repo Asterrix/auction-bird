@@ -10,8 +10,8 @@ public sealed class CategoryRepository(DatabaseContext context) : ICategoryRepos
     public async Task<List<Category>> ListAllAsync(CancellationToken cancellationToken = default)
     {
         return await context.Categories
-            .AsNoTracking()
             .Include(x => x.Parent)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 }

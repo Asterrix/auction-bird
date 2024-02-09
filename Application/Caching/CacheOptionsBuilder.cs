@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 
-namespace Infrastructure.Caching;
+namespace Application.Caching;
 
 public sealed class CacheOptionsBuilder
 {

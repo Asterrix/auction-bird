@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using Application.Caching;
+using LanguageExt;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
@@ -6,23 +8,31 @@ namespace Infrastructure.Caching;
 
 public sealed class CachingService(IDistributedCache distributedCache) : ICachingService
 {
-    public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default) where T : class
-    {
-        string? value = await distributedCache.GetStringAsync(key, cancellationToken);
-
-        return value is not null ? JsonConvert.DeserializeObject<T>(value) : null;
-    }
-
-    public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions cacheEntryOptions,
+    public async Task<Option<T>> RetrieveDataFromCache<T>(
+        string key,
         CancellationToken cancellationToken = default) where T : class
     {
-        string serializedValue = JsonConvert.SerializeObject(value);
-        byte[] serializedBytes = Encoding.UTF8.GetBytes(serializedValue);
+        Option<string> cachedData = await distributedCache.GetStringAsync(key, cancellationToken);
 
-        await distributedCache.SetAsync(key, serializedBytes, cacheEntryOptions, cancellationToken);
+        return cachedData.Match(
+            data => JsonConvert.DeserializeObject<T>(data),
+            () => Option<T>.None
+        );
     }
 
-    public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
+    public async Task StoreDataInCache<T>(
+        string key,
+        T data,
+        DistributedCacheEntryOptions options,
+        CancellationToken cancellationToken = default) where T : class
+    {
+        string serializedData = JsonConvert.SerializeObject(data);
+        byte[] serializedDataBytes = Encoding.UTF8.GetBytes(serializedData);
+
+        await distributedCache.SetAsync(key, serializedDataBytes, options, cancellationToken);
+    }
+
+    public async Task RemoveDataFromCache(string key, CancellationToken cancellationToken = default)
     {
         await distributedCache.RemoveAsync(key, cancellationToken);
     }
