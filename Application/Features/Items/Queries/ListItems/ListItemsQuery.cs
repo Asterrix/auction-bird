@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Application.Features.Items.Queries.ListItems;
 
-public record ListItemsQuery(Pageable Pageable, string? Search) : IRequest<Page<ItemSummary>>;
+public record ListItemsQuery(Pageable Pageable, string? Search, string? Categories) : IRequest<Page<ItemSummary>>;
 
 public sealed class ListItemsQueryHandler : IRequestHandler<ListItemsQuery, Page<ItemSummary>>,
     ICacheableCqrsServiceSerializer<Page<ItemSummary>>

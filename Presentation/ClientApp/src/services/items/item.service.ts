@@ -1,7 +1,7 @@
-﻿import {Pageable} from "../utils/types/pagination/pageable.type.ts";
-import axios from "axios";
-import {environment} from "../environments/environments.development.ts";
-import {ItemFilter} from "./items/item.filter.ts";
+﻿import axios from "axios";
+import {Pageable} from "../../utils/types/pagination/pageable.type.ts";
+import {ItemFilter} from "./item.filter.ts";
+import {environment} from "../../environments/environment.ts";
 
 interface ItemSummary {
   id: string;
@@ -17,6 +17,7 @@ interface Param {
   page: number;
   size: number;
   search?: string;
+  categories?: string;
 }
 
 export const itemService = {
@@ -24,7 +25,8 @@ export const itemService = {
     const params: Param = {
       page: pageable.page,
       size: pageable.size,
-      search: filter?.search || undefined
+      search: filter?.search || undefined,
+      categories: filter?.categories?.flat().join(",") || undefined
     };
 
     const response = await axios.get(`${environment.apiUrl}/items`, {params: params});
