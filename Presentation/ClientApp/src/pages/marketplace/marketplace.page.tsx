@@ -8,6 +8,7 @@ import {ItemSummary} from "../../services/item.service.ts";
 import {Page} from "../../utils/types/pagination/page.type.ts";
 import {Pageable} from "../../utils/types/pagination/pageable.type.ts";
 import {SearchContext} from "../../components/searchbar/search.provider.tsx";
+import {Spinner} from "../../components/spinner/spinner.component.tsx";
 
 export const MarketplacePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -18,6 +19,8 @@ export const MarketplacePage = () => {
   const pageable: Pageable = {page: 1, size: 9};
 
   const {search} = useContext(SearchContext);
+
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     apiService.categories.getCategories()
@@ -40,6 +43,8 @@ export const MarketplacePage = () => {
   }, []);
 
   const loadMoreItems = () => {
+    setLoadingMore(true);
+
     pageable.page++;
 
     apiService.items.getItems(pageable)
@@ -54,6 +59,9 @@ export const MarketplacePage = () => {
       })
       .catch((error) => {
         console.error(error);
+      })
+      .finally(() => {
+        setLoadingMore(false);
       });
   };
 
@@ -306,7 +314,7 @@ export const MarketplacePage = () => {
               </form>
 
               {/* Item grid */}
-              <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-3 lg:gap-x-8">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-3 lg:gap-x-8 relative">
                 {items?.elements.map((item) => (
                   <a key={item.id} href={item.id} className="group text-sm">
                     <div
@@ -321,9 +329,10 @@ export const MarketplacePage = () => {
                     <p className="mt-2 font-medium text-indigo-500">${item.initialPrice}</p>
                   </a>
                 ))}
-              </div>
 
-              <div ref={observerTarget}></div>
+                {loadingMore && <div className="absolute my-10 left-1/2 right-1/2 top-full"><Spinner/></div>}
+                <div ref={observerTarget}></div>
+              </div>
 
             </div>
           </section>
