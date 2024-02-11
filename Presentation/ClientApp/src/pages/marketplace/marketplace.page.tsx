@@ -1,4 +1,4 @@
-﻿import {Fragment, useEffect, useState} from "react";
+﻿import {Fragment, useContext, useEffect, useState} from "react";
 import {Dialog, Disclosure, Transition} from "@headlessui/react";
 import {XMarkIcon} from "@heroicons/react/24/outline";
 import {FunnelIcon, MinusIcon, PlusIcon} from "@heroicons/react/20/solid";
@@ -8,11 +8,13 @@ import {ItemSummary} from "../../services/item.service.ts";
 import {Page} from "../../utils/types/pagination/page.type.ts";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {Pageable} from "../../utils/types/pagination/pageable.type.ts";
+import {SearchContext} from "../../components/searchbar/search.provider.tsx";
 
 export const MarketplacePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<Page<ItemSummary>>();
+  const {search} = useContext(SearchContext);
   const pageable: Pageable = {page: 1, size: 9};
 
   useEffect(() => {
@@ -52,6 +54,19 @@ export const MarketplacePage = () => {
         console.error(error);
       });
   };
+
+  // Search
+  useEffect(() => {
+    setTimeout(() => {
+      apiService.items.getItems(pageable, {search: search})
+        .then((response) => {
+          setItems(response);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }, 300);
+  }, [search]);
 
   return (
     <div className="bg-white">
