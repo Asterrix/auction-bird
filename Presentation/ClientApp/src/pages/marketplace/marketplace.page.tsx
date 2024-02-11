@@ -331,6 +331,7 @@ export const MarketplacePage = () => {
                 ))}
 
                 {loadingMore && <div className="absolute my-10 left-1/2 right-1/2 top-full"><Spinner/></div>}
+                {items?.isEmpty && <p className="text-center text-gray-500">No items were found.</p>}
                 <div ref={observerTarget}></div>
               </div>
 
