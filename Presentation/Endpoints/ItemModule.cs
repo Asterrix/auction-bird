@@ -14,10 +14,14 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
         app.MapGet("items", ListItems);
     }
 
-    private static async Task<IResult> ListItems(ISender sender, [FromQuery] int page, [FromQuery] int size)
+    private static async Task<IResult> ListItems(
+        ISender sender,
+        [FromQuery] int page,
+        [FromQuery] int size,
+        [FromQuery] string? search = null)
     {
         Pageable pageable = Pageable.Of(page, size);
-        Page<ItemSummary> items = await sender.Send(new ListItemsQuery(pageable));
+        Page<ItemSummary> items = await sender.Send(new ListItemsQuery(pageable, search));
 
         return Results.Ok(items);
     }
