@@ -13,13 +13,20 @@ interface ItemSummary {
   };
 }
 
+interface Param {
+  page: number;
+  size: number;
+  search?: string;
+}
+
 export const itemService = {
   async getItems(pageable: Pageable, filter?: Partial<ItemFilter>) {
-    const params = {
-      ...pageable,
-      ...filter,
-    }
-    
+    const params: Param = {
+      page: pageable.page,
+      size: pageable.size,
+      search: filter?.search || undefined
+    };
+
     const response = await axios.get(`${environment.apiUrl}/items`, {params: params});
     return response.data;
   }

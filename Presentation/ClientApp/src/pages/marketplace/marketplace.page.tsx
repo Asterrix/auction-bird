@@ -47,7 +47,7 @@ export const MarketplacePage = () => {
 
     pageable.page++;
 
-    apiService.items.getItems(pageable)
+    apiService.items.getItems(pageable, {search: search})
       .then((response) => {
         setItems({
           elements: items?.elements.concat(response.elements) || response.elements,
@@ -67,15 +67,15 @@ export const MarketplacePage = () => {
 
   // Search
   useEffect(() => {
-    setTimeout(() => {
-      apiService.items.getItems(pageable, {search: search})
-        .then((response) => {
-          setItems(response);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }, 300);
+    pageable.page = 1;
+    
+    apiService.items.getItems(pageable, {search: search})
+      .then((response) => {
+        setItems(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, [search]);
 
 
