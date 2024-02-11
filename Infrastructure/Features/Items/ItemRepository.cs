@@ -1,4 +1,5 @@
-﻿using Application.Features.Items;
+﻿using System.Linq.Expressions;
+using Application.Features.Items;
 using Application.Features.Items.Mapper;
 using Application.Pagination;
 using Application.Specification;
@@ -15,16 +16,18 @@ public sealed class ItemRepository(DatabaseContext context) : IItemRepository
         ISpecification<Item> specification,
         CancellationToken cancellationToken = default)
     {
+        Expression<Func<Item, bool>> expression = specification.AsExpression();
+        
         IEnumerable<ItemSummary> itemSummaries = await context.Items
             .OrderBy(i => i.Name)
-            .Where(specification.AsExpression())
+            .Where(expression)
             .Select(item => new ItemSummary(item.Id, item.Name, item.InitialPrice, item.Images.First()))
             .Skip(pageable.Skip)
             .Take(pageable.Size)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        int totalItems = await context.Items.CountAsync(cancellationToken);
+        int totalItems = await context.Items.Where(expression).CountAsync(cancellationToken);
 
         return new Page<ItemSummary>(ref itemSummaries, pageable, totalItems);
     }
