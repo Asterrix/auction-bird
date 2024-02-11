@@ -10,7 +10,7 @@ public sealed class ItemFilter : ISpecification<Item>
 
     public ItemFilter WithName(string name)
     {
-        _specification.And(i => i.Name.ToLower() == name.ToLower());
+        _specification.And(i => i.Name.ToLower().Contains(name.ToLower()));
         return this;
     }
 
