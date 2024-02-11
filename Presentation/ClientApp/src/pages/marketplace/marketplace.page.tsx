@@ -1,4 +1,4 @@
-﻿import {Fragment, useContext, useEffect, useState} from "react";
+﻿import {Fragment, useContext, useEffect, useRef, useState} from "react";
 import {Dialog, Disclosure, Transition} from "@headlessui/react";
 import {XMarkIcon} from "@heroicons/react/24/outline";
 import {FunnelIcon, MinusIcon, PlusIcon} from "@heroicons/react/20/solid";
@@ -6,16 +6,18 @@ import {apiService} from "../../services/api.service.ts";
 import {Category} from "../../services/category.service.ts";
 import {ItemSummary} from "../../services/item.service.ts";
 import {Page} from "../../utils/types/pagination/page.type.ts";
-import InfiniteScroll from "react-infinite-scroll-component";
 import {Pageable} from "../../utils/types/pagination/pageable.type.ts";
 import {SearchContext} from "../../components/searchbar/search.provider.tsx";
 
 export const MarketplacePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<Page<ItemSummary>>();
-  const {search} = useContext(SearchContext);
+
   const pageable: Pageable = {page: 1, size: 9};
+
+  const {search} = useContext(SearchContext);
 
   useEffect(() => {
     apiService.categories.getCategories()
@@ -67,6 +69,28 @@ export const MarketplacePage = () => {
         });
     }, 300);
   }, [search]);
+
+
+  // Infinite scroll
+  const observerTarget = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && items?.isLastPage === false) {
+        loadMoreItems();
+      }
+    }, {threshold: 1});
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [observerTarget, items?.isLastPage]);
 
   return (
     <div className="bg-white">
@@ -297,16 +321,10 @@ export const MarketplacePage = () => {
                     <p className="mt-2 font-medium text-indigo-500">${item.initialPrice}</p>
                   </a>
                 ))}
-                {items && (
-                  <InfiniteScroll
-                    next={loadMoreItems}
-                    hasMore={!items.isLastPage}
-                    loader={<p>Loading...</p>}
-                    dataLength={0}>
-                    <div className="hidden"></div>
-                  </InfiniteScroll>
-                )}
               </div>
+
+              <div ref={observerTarget}></div>
+
             </div>
           </section>
         </main>
