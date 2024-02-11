@@ -14,6 +14,7 @@ public sealed class ListItemsCacheKeyBuilder : ICacheKeyBuilder<ListItemsQuery>
             .Append(":s=").Append(request.Pageable.Size);
 
         if (request.Search is not null) keyBuilder.Append(":q=").Append(request.Search);
+        if(request.Categories is not null) keyBuilder.Append(":c=").Append(string.Join(",", request.Categories));
 
         return keyBuilder.ToString();
     }

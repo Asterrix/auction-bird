@@ -4,11 +4,11 @@ import {XMarkIcon} from "@heroicons/react/24/outline";
 import {FunnelIcon, MinusIcon, PlusIcon} from "@heroicons/react/20/solid";
 import {apiService} from "../../services/api.service.ts";
 import {Category} from "../../services/category.service.ts";
-import {ItemSummary} from "../../services/item.service.ts";
 import {Page} from "../../utils/types/pagination/page.type.ts";
 import {Pageable} from "../../utils/types/pagination/pageable.type.ts";
 import {SearchContext} from "../../components/searchbar/search.provider.tsx";
 import {Spinner} from "../../components/spinner/spinner.component.tsx";
+import {ItemSummary} from "../../services/items/item.service.ts";
 
 export const MarketplacePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -19,6 +19,7 @@ export const MarketplacePage = () => {
   const pageable: Pageable = {page: 1, size: 9};
 
   const {search} = useContext(SearchContext);
+  const [categoriesFilter, setCategoriesFilter] = useState<string[]>([]);
 
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -68,7 +69,7 @@ export const MarketplacePage = () => {
   // Search
   useEffect(() => {
     pageable.page = 1;
-    
+
     apiService.items.getItems(pageable, {search: search})
       .then((response) => {
         setItems(response);
@@ -78,6 +79,26 @@ export const MarketplacePage = () => {
       });
   }, [search]);
 
+  // Categories filter
+  useEffect(() => {
+    pageable.page = 1;
+
+    apiService.items.getItems(pageable, {categories: categoriesFilter})
+      .then((response) => {
+        setItems(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [categoriesFilter]);
+
+  const toggleCategoryFilter = (category: string) => {
+    if (categoriesFilter.includes(category)) {
+      setCategoriesFilter(categoriesFilter.filter((c) => c !== category));
+    } else {
+      setCategoriesFilter([...categoriesFilter, category]);
+    }
+  };
 
   // Infinite scroll
   const observerTarget = useRef(null);
@@ -190,7 +211,8 @@ export const MarketplacePage = () => {
                                               defaultValue={category.name}
                                               type="checkbox"
                                               defaultChecked={false}
-                                              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                              onClick={() => toggleCategoryFilter(category.name)}
+                                              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 hover:cursor-pointer"
                                             />
                                             <label
                                               htmlFor={`filter-mobile-${category.id}-${index}`}
@@ -289,7 +311,8 @@ export const MarketplacePage = () => {
                                           defaultValue={option.name}
                                           type="checkbox"
                                           defaultChecked={false}
-                                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                          onClick={() => toggleCategoryFilter(option.name)}
+                                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 hover:cursor-pointer"
                                         />
                                         <label
                                           htmlFor={`filter-${category.id}-${optionIdx}`}

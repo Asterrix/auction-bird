@@ -14,7 +14,18 @@ public sealed class ItemFilter : ISpecification<Item>
         return this;
     }
 
-
+    public ItemFilter WithCategory(string category)
+    {
+        _specification.And(c => c.Category.Name.ToLower() == category.ToLower());
+        return this;
+    }
+    
+    public ItemFilter WithOrCategory(string category)
+    {
+        _specification.Or(c => c.Category.Name.ToLower() == category.ToLower());
+        return this;
+    }
+    
     public Expression<Func<Item, bool>> AsExpression()
     {
         return _specification.SpecificationExpression;
