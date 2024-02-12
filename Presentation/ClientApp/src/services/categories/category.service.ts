@@ -1,5 +1,5 @@
 ﻿import axios from "axios";
-import {environment} from "../environments/environments.development.ts";
+import {environment} from "../../environments/environment.ts";
 
 interface Category {
   id: number;

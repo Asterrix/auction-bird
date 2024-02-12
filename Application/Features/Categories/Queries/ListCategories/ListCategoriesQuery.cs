@@ -43,7 +43,7 @@ public class ListCategoriesQueryHandler(
 
     public async Task StoreDataInCache(string key, List<ParentCategory> data, CancellationToken cancellationToken = default)
     {
-        TimeSpan cacheExpiration = TimeSpan.FromMinutes(5);
+        TimeSpan cacheExpiration = TimeSpan.FromHours(12);
 
         DistributedCacheEntryOptions options = new CacheOptionsBuilder()
             .WithKey(key)

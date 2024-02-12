@@ -3,17 +3,18 @@ import {Dialog, Disclosure, Transition} from "@headlessui/react";
 import {XMarkIcon} from "@heroicons/react/24/outline";
 import {FunnelIcon, MinusIcon, PlusIcon} from "@heroicons/react/20/solid";
 import {apiService} from "../../services/api.service.ts";
-import {Category} from "../../services/category.service.ts";
 import {Page} from "../../utils/types/pagination/page.type.ts";
 import {Pageable} from "../../utils/types/pagination/pageable.type.ts";
 import {SearchContext} from "../../components/searchbar/search.provider.tsx";
 import {Spinner} from "../../components/spinner/spinner.component.tsx";
 import {ItemSummary} from "../../services/items/item.service.ts";
+import {CategoriesContext} from "../../services/categories/category.provider.tsx";
 
 export const MarketplacePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const [categories, setCategories] = useState<Category[]>([]);
+
+  const {categories} = useContext(CategoriesContext);
   const [items, setItems] = useState<Page<ItemSummary>>();
 
   const pageable: Pageable = {page: 1, size: 9};
@@ -22,16 +23,6 @@ export const MarketplacePage = () => {
   const [categoriesFilter, setCategoriesFilter] = useState<string[]>([]);
 
   const [loadingMore, setLoadingMore] = useState(false);
-
-  useEffect(() => {
-    apiService.categories.getCategories()
-      .then((response) => {
-        setCategories(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
 
   useEffect(() => {
     apiService.items.getItems(pageable)
@@ -65,7 +56,7 @@ export const MarketplacePage = () => {
         setLoadingMore(false);
       });
   };
-  
+
   // Filter
   useEffect(() => {
     pageable.page = 1;
