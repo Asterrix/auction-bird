@@ -18,7 +18,7 @@ export const MarketplacePage = () => {
 
   const pageable: Pageable = {page: 1, size: 9};
 
-  const {search} = useContext(SearchContext);
+  const {debouncedSearch} = useContext(SearchContext);
   const [categoriesFilter, setCategoriesFilter] = useState<string[]>([]);
 
   const [loadingMore, setLoadingMore] = useState(false);
@@ -48,7 +48,7 @@ export const MarketplacePage = () => {
 
     pageable.page++;
 
-    apiService.items.getItems(pageable, {search: search})
+    apiService.items.getItems(pageable, {search: debouncedSearch})
       .then((response) => {
         setItems({
           elements: items?.elements.concat(response.elements) || response.elements,
@@ -70,14 +70,14 @@ export const MarketplacePage = () => {
   useEffect(() => {
     pageable.page = 1;
 
-    apiService.items.getItems(pageable, {search: search, categories: categoriesFilter})
+    apiService.items.getItems(pageable, {search: debouncedSearch, categories: categoriesFilter})
       .then((response) => {
         setItems(response);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [search, categoriesFilter]);
+  }, [debouncedSearch, categoriesFilter]);
 
   const toggleCategoryFilter = (category: string) => {
     if (categoriesFilter.includes(category)) {
