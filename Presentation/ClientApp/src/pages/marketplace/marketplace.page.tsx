@@ -65,32 +65,19 @@ export const MarketplacePage = () => {
         setLoadingMore(false);
       });
   };
-
-  // Search
+  
+  // Filter
   useEffect(() => {
     pageable.page = 1;
 
-    apiService.items.getItems(pageable, {search: search})
+    apiService.items.getItems(pageable, {search: search, categories: categoriesFilter})
       .then((response) => {
         setItems(response);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [search]);
-
-  // Categories filter
-  useEffect(() => {
-    pageable.page = 1;
-
-    apiService.items.getItems(pageable, {categories: categoriesFilter})
-      .then((response) => {
-        setItems(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [categoriesFilter]);
+  }, [search, categoriesFilter]);
 
   const toggleCategoryFilter = (category: string) => {
     if (categoriesFilter.includes(category)) {
