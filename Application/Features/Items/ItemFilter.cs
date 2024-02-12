@@ -8,6 +8,7 @@ public sealed class ItemFilter : ISpecification<Item>
 {
     private readonly Specification<Item> _specification = Specification<Item>.Create();
 
+    // Should come after Category filter
     public ItemFilter WithName(string name)
     {
         _specification.And(i => i.Name.ToLower().Contains(name.ToLower()));
