@@ -1,4 +1,4 @@
-﻿import {Fragment, useContext, useState} from "react";
+﻿import {Fragment, useContext, useEffect, useState} from "react";
 import {MobileSidebar} from "./mobile-sidebar.component.tsx";
 import {Popover, Transition} from "@headlessui/react";
 import {classNames} from "../../utils/tailwind/class-names.utils.ts";
@@ -42,11 +42,20 @@ const navbarNavigation: NavbarNavigation = {
 export const NavbarComponent = () => {
   const [open, setOpen] = useState(false);
   const {categories} = useContext(CategoriesContext);
-  const [navigation] = useState<NavbarNavigation>({
-    categories: categories,
+  const [navigation, setNavigation] = useState<NavbarNavigation>({
+    categories: [],
     pages: navbarNavigation.pages,
     featured: navbarNavigation.featured
   });
+
+  useEffect(() => {
+    if (categories) {
+      setNavigation({
+        ...navigation,
+        categories: categories
+      });
+    }
+  }, [categories]);
 
   return (
     <>
