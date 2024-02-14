@@ -5,6 +5,7 @@ using Application.Pagination;
 using Application.Specification;
 using Domain.Items;
 using Infrastructure.Persistence;
+using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Features.Items;
@@ -30,5 +31,16 @@ public sealed class ItemRepository(DatabaseContext context) : IItemRepository
         int totalItems = await context.Items.Where(expression).CountAsync(cancellationToken);
 
         return new Page<ItemSummary>(ref itemSummaries, pageable, totalItems);
+    }
+
+    public async Task<Option<Item>> FindByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        Option<Item> item = await context.Items
+            .Include(i => i.Images)
+            .Where(i => i.Id == id)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(cancellationToken);
+
+        return item;
     }
 }

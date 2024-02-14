@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Application.Caching;
+using Application.Features.Items.Queries.FindItem;
 using Application.Features.Items.Queries.ListItems;
 using Application.Filtration;
 using Application.Specification;
@@ -34,5 +35,6 @@ public static class DependencyInjection
     {
         services.AddTransient<ICacheKeyBuilder<ListItemsQuery>, ListItemsCacheKeyBuilder>();
         services.AddTransient<IFilter<ListItemsQuery, ISpecification<Item>>, ListItemsFilter>();
+        services.AddTransient<ITimeRemainingCalculator, TimeRemainingCalculator>();
     }
 }
