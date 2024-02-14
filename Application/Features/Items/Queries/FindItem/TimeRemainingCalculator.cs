@@ -12,7 +12,7 @@ public sealed class TimeRemainingCalculator : ITimeRemainingCalculator
             _ when timeRemaining.Hours > 0 => $"{timeRemaining.Hours} hours, {timeRemaining.Minutes} minutes",
             _ when timeRemaining.Minutes > 0 => $"{timeRemaining.Minutes} minutes",
             _ when timeRemaining.Seconds > 0 => $"{timeRemaining.Seconds} seconds",
-            _ => "Auction has ended"
+            _ => "Auction finished."
         };
     }
 }

@@ -54,25 +54,25 @@ public class TimeRemainingCalculatorTest
         Assert.Equal("2 seconds", result);
     }
 
-    [Fact(DisplayName = "CalculateTimeRemaining should return 'Auction has ended' when time remaining is less than 1 second")]
-    public void CalculateTimeRemaining_ShouldReturnAuctionHasEnded_WhenTimeRemainingIsLessThan1Second()
+    [Fact(DisplayName = "CalculateTimeRemaining should return 'Auction finished.' when time remaining is less than 1 second")]
+    public void CalculateTimeRemaining_ShouldReturnAuctionFinished_WhenTimeRemainingIsLessThan1Second()
     {
         TimeRemainingCalculator timeRemainingCalculator = new();
         DateTime endTime = DateTime.UtcNow.AddSeconds(-SecondTolerance);
 
         string result = timeRemainingCalculator.CalculateTimeRemaining(endTime);
 
-        Assert.Equal("Auction has ended", result);
+        Assert.Equal("Auction finished.", result);
     }
 
-    [Fact(DisplayName = "CalculateTimeRemaining should return 'Auction has ended' when time remaining is 0")]
-    public void CalculateTimeRemaining_ShouldReturnAuctionHasEnded_WhenTimeRemainingIs0()
+    [Fact(DisplayName = "CalculateTimeRemaining should return 'Auction finished.' when time remaining is 0")]
+    public void CalculateTimeRemaining_ShouldReturnAuctionFinished_WhenTimeRemainingIs0()
     {
         TimeRemainingCalculator timeRemainingCalculator = new();
         DateTime endTime = DateTime.UtcNow.AddSeconds(-SecondTolerance);
 
         string result = timeRemainingCalculator.CalculateTimeRemaining(endTime);
 
-        Assert.Equal("Auction has ended", result);
+        Assert.Equal("Auction finished.", result);
     }
 }
