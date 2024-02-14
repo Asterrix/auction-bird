@@ -13,6 +13,19 @@ interface ItemSummary {
   };
 }
 
+interface ItemInfo {
+  id: string;
+  name: string;
+  description: string;
+  initialPrice: number;
+  timeLeft: string;
+  isActive: boolean;
+  images: {
+    id: number;
+    imageUrl: string;
+  }[];
+}
+
 interface Param {
   page: number;
   size: number;
@@ -31,7 +44,12 @@ export const itemService = {
 
     const response = await axios.get(`${environment.apiUrl}/items`, {params: params});
     return response.data;
+  },
+
+  async getItem(id: string) {
+    const response = await axios.get(`${environment.apiUrl}/items/${id}`);
+    return response.data;
   }
 };
 
-export type {ItemSummary};
+export type {ItemSummary, ItemInfo};
