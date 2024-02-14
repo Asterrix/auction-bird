@@ -317,7 +317,7 @@ export const MarketplacePage = () => {
               {/* Item grid */}
               <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-3 lg:col-span-3 lg:gap-x-8 relative">
                 {items?.elements.map((item) => (
-                  <a key={item.id} href={`item/${item.id}`} className="group text-sm">
+                  <a key={item.id} href={`/marketplace/item/${item.id}`} className="group text-sm">
                     <div
                       className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
                       <img

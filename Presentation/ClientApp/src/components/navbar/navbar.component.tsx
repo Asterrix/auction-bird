@@ -35,7 +35,7 @@ const navbarNavigation: NavbarNavigation = {
   ],
   categories: [],
   pages: [
-    {name: "Marketplace", href: "marketplace"},
+    {name: "Marketplace", href: "/marketplace"},
   ],
 };
 
