@@ -139,7 +139,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = (
 
                 {/* Create Account */}
                 <div className="flow-root">
-                  <a href="#" className="-m-2 block p-2 font-medium text-gray-900">
+                  <a href="/signup" className="-m-2 block p-2 font-medium text-gray-900">
                     Create account
                   </a>
                 </div>
