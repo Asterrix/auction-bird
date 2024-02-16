@@ -1,6 +1,7 @@
 using Application;
 using Carter;
 using Infrastructure;
+using Presentation.Middleware;
 using Serilog;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("ClientPolicy");
 app.UseHttpsRedirection();
+app.UseMiddleware<AmazonExceptionMiddleware>();
+app.UseMiddleware<ValidationExceptionMiddleware>();
 app.MapCarter();
 app.UseSerilogRequestLogging();
 

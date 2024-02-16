@@ -2,6 +2,7 @@
 import {HomePage} from "./home/home.page.tsx";
 import {MarketplacePage} from "./marketplace/marketplace.page.tsx";
 import {ItemPage} from "./item/item.page.tsx";
+import {SignupPage} from "./signup/signup.page.tsx";
 
 export const ROUTER = createBrowserRouter([
   {
@@ -15,5 +16,9 @@ export const ROUTER = createBrowserRouter([
   {
     path: "/marketplace/item/:id",
     Component: ItemPage
+  },
+  {
+    path: "/signup",
+    Component: SignupPage
   }
 ]);
