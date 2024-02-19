@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.ConfigureMediatR();
         services.ConfigureFluentValidation();
         services.ConfigureAwsCognito();
+        services.ConfigureHttpContextAccessor();
         services.ConfigureItems();
     }
 
@@ -49,6 +50,11 @@ public static class DependencyInjection
                 Region = RegionEndpoint.EUWest3,
                 Credentials = new BasicAWSCredentials(key, secret)
             });
+    }
+    
+    private static void ConfigureHttpContextAccessor(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
     }
 
     private static void ConfigureItems(this IServiceCollection services)
