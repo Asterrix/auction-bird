@@ -2,6 +2,11 @@
 
 namespace Application.Features.Authentication.Commands.Mapper;
 
+public record SignInDto(
+    string ClientId,
+    string Email,
+    string Password);
+
 public record SignUpDto(
     string ClientId,
     string FirstName,
@@ -13,6 +18,15 @@ public record SignUpDto(
 
 public static class AuthMapper
 {
+    public static SignInDto MapToSignInDto(this IFormCollection form)
+    {
+        return new SignInDto(
+            form["clientId"],
+            form["email"],
+            form["password"]
+        );
+    }
+
     public static SignUpDto MapToSignUpDto(this IFormCollection form)
     {
         return new SignUpDto(

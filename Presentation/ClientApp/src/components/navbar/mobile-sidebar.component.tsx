@@ -1,7 +1,8 @@
-﻿import React, {Fragment} from "react";
+﻿import React, {Fragment, useContext} from "react";
 import {Dialog, Tab, Transition} from "@headlessui/react";
 import {XMarkIcon} from "@heroicons/react/24/outline";
 import {NavbarNavigation} from "./navbar.component.tsx";
+import {userContext} from "../../services/auth/user.provider.tsx";
 
 interface MobileSidebarProps {
   open: boolean;
@@ -15,6 +16,8 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = (
     setOpen,
     navigation
   }) => {
+  const {user} = useContext(userContext);
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-40 lg:hidden" onClose={setOpen}>
@@ -128,22 +131,48 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = (
               </div>
 
               {/* Action Menu */}
-              <div className="border-t border-gray-200 px-4 py-6 space-y-6">
+              {user?.present ? (
+                <div className="border-t border-gray-200 py-6 space-y-6 flow-root">
+                  <div className="flex items-center px-4">
+                    <div className="flex-shrink-0">
+                      <img
+                        className="h-10 w-10 rounded-full"
+                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        alt=""
+                      />
+                    </div>
+                    <div className="ml-3">
+                      <div className="text-base font-medium text-gray-800">{user.fullName}</div>
+                      <div className="text-sm font-medium text-gray-500">{user.email}</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-1">
+                    <div className="px-4 space-y-6">
 
-                {/* Sign In */}
-                <div className="flow-root">
-                  <a href="#" className="-m-2 block p-2 font-medium text-gray-900">
-                    Sign in
-                  </a>
+                      <div key="home" className="flow-root">
+                        <a href="/" className="-m-2 block p-2 font-medium text-gray-900">
+                          Sign out
+                        </a>
+                      </div>
+                      
+                    </div>
+                  </div>
                 </div>
+              ) : (
+                <div className="border-t border-gray-200 px-4 py-6 space-y-6">
+                  <div className="flow-root">
+                    <a href="/signin" className="-m-2 block p-2 font-medium text-gray-900">
+                      Sign in
+                    </a>
+                  </div>
 
-                {/* Create Account */}
-                <div className="flow-root">
-                  <a href="/signup" className="-m-2 block p-2 font-medium text-gray-900">
-                    Create account
-                  </a>
+                  <div className="flow-root">
+                    <a href="/signup" className="-m-2 block p-2 font-medium text-gray-900">
+                      Create account
+                    </a>
+                  </div>
                 </div>
-              </div>
+              )}
             </Dialog.Panel>
           </Transition.Child>
         </div>
