@@ -17,6 +17,10 @@ type SignUp = {
   isOver18: boolean;
 }
 
+type SignOut = {
+  username: string;
+}
+
 const authService = {
   async signIn(form: SignIn) {
     const response = await axios.postForm(`${environment.apiUrl}/signin`, form, {
@@ -28,12 +32,23 @@ const authService = {
     });
     return response.data;
   },
-  
+
   async signUp(form: SignUp) {
     const response = await axios.postForm(`${environment.apiUrl}/signup`, form);
+    return response.data;
+  },
+
+  async signOut(form: SignOut) {
+    const response = await axios.postForm(`${environment.apiUrl}/signout`, form, {
+      withCredentials: true,
+      headers: {
+        "Access-Control-Allow-Origin": environment.apiUrl,
+        "Access-Control-Allow-Credentials": "true",
+      }
+    });
     return response.data;
   }
 };
 
 export {authService};
-export type {SignIn, SignUp};
+export type {SignIn, SignUp, SignOut};
