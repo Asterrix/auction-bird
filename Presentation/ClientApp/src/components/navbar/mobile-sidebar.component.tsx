@@ -16,7 +16,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = (
     setOpen,
     navigation
   }) => {
-  const {user} = useContext(userContext);
+  const {user, signOut} = useContext(userContext);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -150,11 +150,11 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = (
                     <div className="px-4 space-y-6">
 
                       <div key="home" className="flow-root">
-                        <a href="/" className="-m-2 block p-2 font-medium text-gray-900">
+                        <button className="-m-2 block p-2 font-medium text-gray-900" onClick={signOut}>
                           Sign out
-                        </a>
+                        </button>
                       </div>
-                      
+
                     </div>
                   </div>
                 </div>

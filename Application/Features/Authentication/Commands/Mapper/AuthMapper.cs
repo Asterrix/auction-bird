@@ -16,6 +16,8 @@ public record SignUpDto(
     bool TermsAndConditionsAccepted,
     bool IsOver18);
 
+public record SignOutDto(string Username);
+
 public static class AuthMapper
 {
     public static SignInDto MapToSignInDto(this IFormCollection form)
@@ -37,6 +39,13 @@ public static class AuthMapper
             form["password"],
             bool.Parse(form["termsAndConditions"]),
             bool.Parse(form["isOver18"])
+        );
+    }
+    
+    public static SignOutDto MapToSignOutDto(this IFormCollection form)
+    {
+        return new SignOutDto(
+            form["username"]
         );
     }
 }
