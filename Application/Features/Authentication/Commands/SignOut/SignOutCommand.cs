@@ -12,9 +12,6 @@ public record SignOutCommand(SignOutDto User) : IRequest<bool>;
 
 public sealed class SignOutCommandHandler : IRequestHandler<SignOutCommand, bool>
 {
-    private readonly string _poolId = Environment.GetEnvironmentVariable("COGNITO_USER_POOL_ID") ??
-                                      throw new InvalidOperationException("COGNITO_USER_POOL_ID is not set");
-
     private readonly IAmazonCognitoIdentityProvider _cognitoService;
     private readonly IHttpContextAccessor _contextAccessor;
 
@@ -29,7 +26,7 @@ public sealed class SignOutCommandHandler : IRequestHandler<SignOutCommand, bool
         AdminUserGlobalSignOutRequest globalSignOutRequest = new()
         {
             Username = request.User.Username,
-            UserPoolId = _poolId
+            UserPoolId = CognitoConstant.PoolId
         };
 
         try

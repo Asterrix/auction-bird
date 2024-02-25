@@ -90,11 +90,6 @@ public record SignUpCommand(SignUpDto User) : IRequest<bool>;
 
 public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
 {
-    private const string DefaultGroupName = "User"; // Default group name to which the user will be added.
-
-    private readonly string _poolId = Environment.GetEnvironmentVariable("COGNITO_USER_POOL_ID") ??
-                                      throw new InvalidOperationException("COGNITO_USER_POOL_ID is not set");
-
     private readonly IAmazonCognitoIdentityProvider _cognitoService;
     private readonly IValidator<SignUpCommand> _validator;
 
@@ -185,7 +180,7 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
         AdminConfirmSignUpRequest confirmSignUpRequest = new()
         {
             Username = email,
-            UserPoolId = _poolId
+            UserPoolId = CognitoConstant.PoolId
         };
 
         try
@@ -220,14 +215,14 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
     {
         AdminAddUserToGroupRequest addUserToGroupRequest = new()
         {
-            GroupName = DefaultGroupName,
+            GroupName = CognitoConstant.DefaultGroupName,
             Username = email,
-            UserPoolId = _poolId
+            UserPoolId = CognitoConstant.PoolId
         };
 
         try
         {
-            Log.Information("Adding user with email: {Email} to group: {GroupName}", email, DefaultGroupName);
+            Log.Information("Adding user with email: {Email} to group: {GroupName}", email, CognitoConstant.DefaultGroupName);
             await _cognitoService.AdminAddUserToGroupAsync(addUserToGroupRequest, cancellationToken);
             return true;
         }
@@ -255,7 +250,7 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
         AdminDeleteUserRequest deleteUserRequest = new()
         {
             Username = email,
-            UserPoolId = _poolId
+            UserPoolId = CognitoConstant.PoolId
         };
 
         try
