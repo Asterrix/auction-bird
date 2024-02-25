@@ -41,6 +41,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("ClientPolicy");
 app.UseHttpsRedirection();
 app.UseMiddleware<AmazonExceptionMiddleware>();
+app.UseMiddleware<TokenMiddleware>();
 app.UseMiddleware<ValidationExceptionMiddleware>();
 app.MapCarter();
 app.UseSerilogRequestLogging();

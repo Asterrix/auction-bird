@@ -53,6 +53,13 @@ public sealed class SignInCommandHandler : IRequestHandler<SignInCommand, bool>
                 Secure = true,
                 SameSite = SameSiteMode.Strict
             });
+            
+            _contextAccessor.HttpContext.Response.Cookies.Append("refreshToken", initiateAuthResponse.AuthenticationResult.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+            });
 
             return true;
         }

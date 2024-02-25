@@ -7,6 +7,10 @@ public record SignInDto(
     string Email,
     string Password);
 
+public record SignInRefreshTokenDto(
+    string ClientId,
+    string RefreshToken);
+
 public record SignUpDto(
     string ClientId,
     string FirstName,
@@ -29,6 +33,14 @@ public static class AuthMapper
         );
     }
 
+    public static SignInRefreshTokenDto MapToSignInRefreshTokenDto(this IFormCollection form)
+    {
+        return new SignInRefreshTokenDto(
+            form["clientId"],
+            form["refreshToken"]
+        );
+    }
+
     public static SignUpDto MapToSignUpDto(this IFormCollection form)
     {
         return new SignUpDto(
@@ -41,7 +53,7 @@ public static class AuthMapper
             bool.Parse(form["isOver18"])
         );
     }
-    
+
     public static SignOutDto MapToSignOutDto(this IFormCollection form)
     {
         return new SignOutDto(
