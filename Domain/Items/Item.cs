@@ -1,4 +1,5 @@
-﻿using Domain.Categories;
+﻿using Domain.Bidding;
+using Domain.Categories;
 
 namespace Domain.Items;
 
@@ -13,4 +14,6 @@ public sealed class Item
     public DateTime EndTime { get; init; }
     public bool IsActive { get; set; } = true;
     public List<ItemImage> Images { get; set; } = [];
+    public List<Bid> Bids { get; set; } = [];
+    public int CategoryId { get; set; }
 }

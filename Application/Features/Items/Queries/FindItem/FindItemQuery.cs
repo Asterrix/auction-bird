@@ -1,13 +1,14 @@
-﻿using Application.Features.Items.Mapper;
-using Domain.Items;
+﻿using Domain.Items;
 using LanguageExt;
 using MediatR;
 
 namespace Application.Features.Items.Queries.FindItem;
 
-public record FindItemQuery(Guid Id) : IRequest<Option<ItemInfo>>;
+public record FindItemQueryResponse(Item Item, string TimeRemaining, decimal CurrentPrice);
 
-public sealed class FindItemQueryHandler : IRequestHandler<FindItemQuery, Option<ItemInfo>>
+public record FindItemQuery(Guid Id) : IRequest<Option<FindItemQueryResponse>>;
+
+public sealed class FindItemQueryHandler : IRequestHandler<FindItemQuery, Option<FindItemQueryResponse>>
 {
     private readonly IItemRepository _itemRepository;
     private readonly ITimeRemainingCalculator _timeRemainingCalculator;
@@ -18,17 +19,17 @@ public sealed class FindItemQueryHandler : IRequestHandler<FindItemQuery, Option
         _timeRemainingCalculator = timeRemainingCalculator;
     }
 
-    public async Task<Option<ItemInfo>> Handle(FindItemQuery request, CancellationToken cancellationToken)
+    async Task<Option<FindItemQueryResponse>> IRequestHandler<FindItemQuery, Option<FindItemQueryResponse>>.Handle(FindItemQuery request, CancellationToken cancellationToken)
     {
-        Option<Item> item = await _itemRepository.FindByIdAsync(request.Id, cancellationToken);
-        
-        return item.Match(
-            Some: item =>
+        Option<Item> itemOption = await _itemRepository.FindByIdAsync(request.Id, cancellationToken);
+
+        return itemOption.Match(
+            item =>
             {
                 string timeRemaining = _timeRemainingCalculator.CalculateTimeRemaining(item.EndTime);
-                return ItemMapper.ToInfo(item, timeRemaining);
+                decimal currentPrice = item.Bids.Count != 0 ? item.Bids.Max(b => b.Amount) : item.InitialPrice;
+                return new FindItemQueryResponse(item, timeRemaining, currentPrice);
             },
-            None: Option<ItemInfo>.None
-        );
+            () => Option<FindItemQueryResponse>.None);
     }
 }

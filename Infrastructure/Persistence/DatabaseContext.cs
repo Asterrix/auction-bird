@@ -1,4 +1,5 @@
-﻿using Domain.Categories;
+﻿using Domain.Bidding;
+using Domain.Categories;
 using Domain.Items;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,4 +16,5 @@ public sealed class DatabaseContext(DbContextOptions options) : DbContext(option
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<Item> Items { get; set; } = null!;
     public DbSet<ItemImage> ItemImages { get; set; } = null!;
+    public DbSet<Bid> Bids { get; set; } = null!;
 }

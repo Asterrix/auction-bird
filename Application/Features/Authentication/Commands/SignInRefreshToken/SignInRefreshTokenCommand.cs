@@ -2,7 +2,7 @@
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Runtime;
-using Application.Features.Authentication.Commands.Mapper;
+using Application.Features.Authentication.Mapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Serilog;

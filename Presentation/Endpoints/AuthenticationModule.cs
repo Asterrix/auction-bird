@@ -1,8 +1,8 @@
-﻿using Application.Features.Authentication.Commands.Mapper;
-using Application.Features.Authentication.Commands.SignIn;
+﻿using Application.Features.Authentication.Commands.SignIn;
 using Application.Features.Authentication.Commands.SignInRefreshToken;
 using Application.Features.Authentication.Commands.SignOut;
 using Application.Features.Authentication.Commands.SignUp;
+using Application.Features.Authentication.Mapper;
 using Carter;
 using MediatR;
 

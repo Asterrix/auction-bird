@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Application.Features.Authentication.Commands.Mapper;
+namespace Application.Features.Authentication.Mapper;
 
 public record SignInDto(
     string ClientId,
