@@ -5,6 +5,7 @@ import {apiService} from "../../services/api.service.ts";
 import {useCallback, useContext, useState} from "react";
 import {XCircleIcon} from "@heroicons/react/20/solid";
 import {userContext} from "../../services/auth/user.provider.tsx";
+import {useLocation, useNavigate} from "react-router-dom";
 
 type Error = {
   present: boolean;
@@ -16,6 +17,10 @@ export const SigninPage = () => {
     register,
     handleSubmit,
   } = useForm();
+
+  const location = useLocation();
+  const {from} = location.state || {from: {pathname: "/"}};
+  const navigate = useNavigate();
 
   const {updateUser} = useContext(userContext);
   const [error, setError] = useState<Error>({present: false, message: ""});
@@ -69,8 +74,8 @@ export const SigninPage = () => {
 
               apiService.authentication.signIn(signInForm)
                 .then(() => {
-                  window.location.href = "/";
                   updateUser();
+                  navigate(from);
                 })
                 .catch((error) => {
                   const message = error.response.data.detail;

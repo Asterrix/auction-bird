@@ -1,7 +1,9 @@
 using Application.Caching;
+using Application.Features.Bidding;
 using Application.Features.Categories.Queries;
 using Application.Features.Items;
 using Infrastructure.Caching;
+using Infrastructure.Features.Bidding;
 using Infrastructure.Features.Categories;
 using Infrastructure.Features.Items;
 using Infrastructure.Persistence;
@@ -62,5 +64,6 @@ public static class DependencyInjection
     {
         serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
         serviceCollection.AddScoped<IItemRepository, ItemRepository>();
+        serviceCollection.AddScoped<IBiddingRepository, BiddingRepository>();
     }
 }

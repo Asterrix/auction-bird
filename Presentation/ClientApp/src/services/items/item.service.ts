@@ -17,7 +17,7 @@ interface ItemInfo {
   id: string;
   name: string;
   description: string;
-  initialPrice: number;
+  currentPrice: number;
   timeLeft: string;
   isActive: boolean;
   images: {

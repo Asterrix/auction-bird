@@ -1,7 +1,7 @@
 ﻿using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Runtime;
-using Application.Features.Authentication.Commands.Mapper;
+using Application.Features.Authentication.Mapper;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;

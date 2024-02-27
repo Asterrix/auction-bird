@@ -1,4 +1,5 @@
-﻿using Domain.Items;
+﻿using Application.Features.Items.Queries.FindItem;
+using Domain.Items;
 
 namespace Application.Features.Items.Mapper;
 
@@ -12,10 +13,10 @@ public record ItemInfo(
     Guid Id,
     string Name,
     string Description,
-    decimal InitialPrice,
-    string TimeLeft, 
+    decimal CurrentPrice,
+    string TimeLeft,
     bool IsActive,
-    List<ItemImage> Images); 
+    List<ItemImage> Images);
 
 public static class ItemMapper
 {
@@ -28,16 +29,16 @@ public static class ItemMapper
     {
         return items.Select(ToSummary);
     }
-    
-    public static ItemInfo ToInfo(this Item item, string timeRemaining)
+
+    public static ItemInfo ToInfo(FindItemQueryResponse itemQueryResponse)
     {
         return new ItemInfo(
-            item.Id,
-            item.Name,
-            item.Description,
-            item.InitialPrice,
-            timeRemaining,
-            item.IsActive,
-            item.Images);
+            itemQueryResponse.Item.Id,
+            itemQueryResponse.Item.Name,
+            itemQueryResponse.Item.Description,
+            itemQueryResponse.CurrentPrice,
+            itemQueryResponse.TimeRemaining,
+            itemQueryResponse.Item.IsActive,
+            itemQueryResponse.Item.Images);
     }
 }

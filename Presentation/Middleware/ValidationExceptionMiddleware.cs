@@ -17,7 +17,7 @@ public sealed class ValidationExceptionMiddleware(RequestDelegate next)
             {
                 Title = "Validation Error",
                 Status = StatusCodes.Status400BadRequest,
-                Detail = e.Errors.First().ErrorMessage,
+                Detail = e.Errors.Any() ? e.Errors.First().ErrorMessage : e.Message,
                 Instance = context.Request.Path
             };
 

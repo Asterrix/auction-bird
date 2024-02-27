@@ -1,5 +1,5 @@
-﻿using Application.Features.Authentication.Commands.Mapper;
-using Application.Features.Authentication.Commands.SignUp;
+﻿using Application.Features.Authentication.Commands.SignUp;
+using Application.Features.Authentication.Mapper;
 using FluentValidation.Results;
 using JetBrains.Annotations;
 using Xunit;

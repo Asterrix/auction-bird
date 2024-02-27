@@ -36,7 +36,9 @@ public sealed class ItemRepository(DatabaseContext context) : IItemRepository
     public async Task<Option<Item>> FindByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         Option<Item> item = await context.Items
+            .Include(i => i.Category)
             .Include(i => i.Images)
+            .Include(i => i.Bids)
             .Where(i => i.Id == id)
             .AsNoTracking()
             .SingleOrDefaultAsync(cancellationToken);

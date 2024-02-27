@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using Application.Features.Authentication.Commands.Mapper;
 using Application.Features.Authentication.Commands.SignInRefreshToken;
+using Application.Features.Authentication.Mapper;
 using LanguageExt;
 using MediatR;
 using Microsoft.IdentityModel.Tokens;

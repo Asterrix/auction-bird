@@ -34,10 +34,14 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
         ISender sender,
         Guid id)
     {
-        Option<ItemInfo> item = await sender.Send(new FindItemQuery(id));
+        Option<FindItemQueryResponse> item = await sender.Send(new FindItemQuery(id));
 
         return item.Match(
-            i => Results.Ok(i),
+            i =>
+            {
+                ItemInfo mappedItems = ItemMapper.ToInfo(i);
+                return Results.Ok(mappedItems);
+            },
             Results.NotFound("Item not found.")
         );
     }
