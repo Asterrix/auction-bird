@@ -161,8 +161,8 @@ export const ItemPage = () => {
                         </p>
                       </div>
                     </div>
-
-                    {user ? (
+                    
+                    {user && item.isActive && item.timeLeft != "Auction finished." && (
                       <form className="flex gap-3 items-center" onSubmit={
                         handleSubmit((data) => {
                           submitForm(data);
@@ -206,7 +206,9 @@ export const ItemPage = () => {
                           </div>
                         </div>
                       </form>
-                    ) : (
+                    )}
+
+                    {!user && item.isActive && item.timeLeft != "Auction finished." && (
                       <button
                         onClick={() => {
                           navigate("/signin", {state: {from: location.pathname}});
