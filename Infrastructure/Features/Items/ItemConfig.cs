@@ -26,7 +26,7 @@ public sealed class ItemsConfig : IEntityTypeConfiguration<Item>
             .HasColumnType("decimal(10,2)")
             .HasPrecision(10, 2)
             .IsRequired();
-        
+
         builder
             .Property(x => x.StartTime)
             .IsRequired();
@@ -44,17 +44,21 @@ public sealed class ItemsConfig : IEntityTypeConfiguration<Item>
             .WithMany()
             .HasForeignKey(x => x.CategoryId)
             .IsRequired();
-        
+
         builder
             .HasMany(x => x.Images)
             .WithOne()
             .HasForeignKey(x => x.ItemId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder
             .HasMany(x => x.Bids)
             .WithOne()
             .HasForeignKey(x => x.ItemId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .Property(x => x.OwnerId)
+            .IsRequired();
     }
 }

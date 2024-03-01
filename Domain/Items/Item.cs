@@ -16,4 +16,5 @@ public sealed class Item
     public List<ItemImage> Images { get; set; } = [];
     public List<Bid> Bids { get; set; } = [];
     public int CategoryId { get; set; }
+    public string OwnerId { get; init; }
 }

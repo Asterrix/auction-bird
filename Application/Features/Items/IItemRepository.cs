@@ -12,7 +12,12 @@ public interface IItemRepository
         Pageable pageable,
         ISpecification<Item> specification,
         CancellationToken cancellationToken = default);
-    
+
+    Task<Page<Item>> ListAllItemsFullDetailsAsync(
+        Pageable pageable,
+        ISpecification<Item> specification,
+        CancellationToken cancellationToken = default);
+
     Task<Option<Item>> FindByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default);

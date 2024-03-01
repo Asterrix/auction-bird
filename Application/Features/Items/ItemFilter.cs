@@ -27,6 +27,18 @@ public sealed class ItemFilter : ISpecification<Item>
         return this;
     }
     
+    public ItemFilter IsActive()
+    {
+        _specification.And(i => i.IsActive);
+        return this;
+    }
+    
+    public ItemFilter OwnedBy(string username)
+    {
+        _specification.And(i => i.OwnerId == username);
+        return this;
+    }
+    
     public Expression<Func<Item, bool>> AsExpression()
     {
         return _specification.SpecificationExpression;
