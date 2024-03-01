@@ -149,7 +149,10 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = (
                   <div className="mt-3 space-y-1">
                     <div className="px-4 space-y-6">
 
-                      <div key="home" className="flow-root">
+                      <div key="home" className="flow-root space-y-3">
+                        <button className="-m-2 block p-2 font-medium text-gray-900" onClick={() => window.location.href = "/profile/active"}>
+                          Profile
+                        </button>
                         <button className="-m-2 block p-2 font-medium text-gray-900" onClick={signOut}>
                           Sign out
                         </button>
