@@ -2,10 +2,12 @@
 import {categoryService} from "./categories/category.service.ts";
 import {authService} from "./auth/auth.service.ts";
 import {biddingService} from "./bidding/bidding.service.ts";
+import {userService} from "./user/user.service.ts";
 
 export const apiService = {
   authentication: authService,
   bidding: biddingService,
   categories: categoryService,
-  items: itemService
+  items: itemService,
+  users: userService
 };

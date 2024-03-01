@@ -32,6 +32,29 @@ public sealed class ItemRepository(DatabaseContext context) : IItemRepository
 
         return new Page<ItemSummary>(ref itemSummaries, pageable, totalItems);
     }
+    
+    public async Task<Page<Item>> ListAllItemsFullDetailsAsync(
+        Pageable pageable,
+        ISpecification<Item> specification,
+        CancellationToken cancellationToken = default)
+    {
+        Expression<Func<Item, bool>> expression = specification.AsExpression();
+        
+        IEnumerable<Item> items = await context.Items
+            .OrderBy(i => i.Name)
+            .Where(expression)
+            .Skip(pageable.Skip)
+            .Take(pageable.Size)
+            .Include(i => i.Category)
+            .Include(i => i.Images)
+            .Include(i => i.Bids)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+        
+        int totalItems = await context.Items.Where(expression).CountAsync(cancellationToken);
+        
+        return new Page<Item>(ref items, pageable, totalItems);
+    }
 
     public async Task<Option<Item>> FindByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
