@@ -4,6 +4,10 @@ import {MarketplacePage} from "./marketplace/marketplace.page.tsx";
 import {ItemPage} from "./item/item.page.tsx";
 import {SignupPage} from "./signup/signup.page.tsx";
 import {SigninPage} from "./signin/signin.page.tsx";
+import {ProfilePage} from "./profile/profile.page.tsx";
+import {ProfilePageActiveSection} from "./profile/profile.page.active.section.tsx";
+import {ProfilePageSoldSection} from "./profile/profile.page.sold.section.tsx";
+import {ProfilePageBidsSection} from "./profile/profile.page.bids.section.tsx";
 
 export const ROUTER = createBrowserRouter([
   {
@@ -25,5 +29,23 @@ export const ROUTER = createBrowserRouter([
   {
     path: "/signin",
     Component: SigninPage
+  },
+  {
+    path: "/profile/:section",
+    Component: ProfilePage,
+    children: [
+      {
+        path: "active",
+        Component: ProfilePageActiveSection
+      },
+      {
+        path: "sold",
+        Component: ProfilePageSoldSection
+      },
+      {
+        path: "bids",
+        Component: ProfilePageBidsSection
+      }
+    ]
   }
 ]);

@@ -9,9 +9,11 @@ type User = {
   fullName: string;
   email: string;
   username: string;
+  subject: string;
 }
 
 interface UserToken extends JwtPayload {
+  subject: string;
   given_name: string;
   family_name: string;
   email: string;
@@ -56,12 +58,16 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
 
     // Extract the username from the JWT
     const username: string = jwt["cognito:username"];
+    
+    // Extract the subject from the JWT
+    const subject: string = jwt.sub;
 
     setUser({
       present: true,
       fullName: fullName,
       email: email,
       username: username,
+      subject: subject,
     });
   }, []);
 
