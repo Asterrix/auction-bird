@@ -12,6 +12,15 @@ public record ActiveUserItemDto(
     ItemImage MainImage
 );
 
+public record SoldUserItemDto(
+    Guid Id,
+    string Name,
+    decimal InitialPrice,
+    int NumberOfBids,
+    decimal FinalPrice,
+    ItemImage MainImage
+);
+
 public static class UserMapper
 {
     public static ActiveUserItemDto MapToActiveUserItemDto(Item item, string timeLeft, decimal highestBid)
@@ -23,6 +32,18 @@ public static class UserMapper
             item.InitialPrice,
             item.Bids.Count,
             highestBid,
+            item.Images.First()
+        );
+    }
+    
+    public static SoldUserItemDto MapToSoldUserItemDto(Item item, decimal finalPrice)
+    {
+        return new SoldUserItemDto(
+            item.Id,
+            item.Name,
+            item.InitialPrice,
+            item.Bids.Count,
+            finalPrice,
             item.Images.First()
         );
     }
