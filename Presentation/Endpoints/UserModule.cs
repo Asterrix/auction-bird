@@ -1,5 +1,6 @@
 ﻿using Application.Features.User.Mapper;
 using Application.Features.User.Queries.ListActiveUserItemsQuery;
+using Application.Features.User.Queries.ListBidUserItemsQuery;
 using Application.Features.User.Queries.ListSoldUserItemsQuery;
 using Application.Pagination;
 using Carter;
@@ -14,6 +15,7 @@ public sealed class UserModule() : CarterModule(Versioning.Version)
     {
         app.MapGet("users/{username}/items", ListActiveUserItems);
         app.MapGet("users/{username}/sold-items", ListSoldUserItems);
+        app.MapGet("users/{username}/bid-items", ListBidUserItems);
     }
 
     private static async Task<IResult> ListActiveUserItems(
@@ -36,6 +38,18 @@ public sealed class UserModule() : CarterModule(Versioning.Version)
     {
         Pageable pageable = Pageable.Of(page, size);
         Page<SoldUserItemDto> items = await sender.Send(new ListSoldUserItemsQuery(username, pageable));
+
+        return Results.Ok(items);
+    }
+    
+    private static async Task<IResult> ListBidUserItems(
+        ISender sender,
+        string username,
+        [FromQuery] int page,
+        [FromQuery] int size)
+    {
+        Pageable pageable = Pageable.Of(page, size);
+        Page<ActiveUserItemDto> items = await sender.Send(new ListBidUserItemsQuery(username, pageable));
 
         return Results.Ok(items);
     }

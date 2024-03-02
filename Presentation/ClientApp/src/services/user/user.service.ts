@@ -46,6 +46,16 @@ const userService = {
       }
     });
     return response.data;
+  },
+
+  async listBidItems(userId: string, pageable: Pageable) {
+    const response = await axios.get(`${environment.apiUrl}/users/${userId}/bid-items`, {
+      params: {
+        page: pageable.page,
+        size: pageable.size
+      }
+    });
+    return response.data;
   }
 };
 
