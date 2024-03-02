@@ -15,9 +15,31 @@ type ActiveItem = {
   };
 }
 
+type SoldItem = {
+  id: string;
+  name: string;
+  initialPrice: number;
+  numberOfBids: number;
+  finalPrice: number;
+  mainImage: {
+    id: string;
+    imageUrl: string;
+  };
+}
+
 const userService = {
   async listActiveItems(userId: string, pageable: Pageable) {
     const response = await axios.get(`${environment.apiUrl}/users/${userId}/items`, {
+      params: {
+        page: pageable.page,
+        size: pageable.size
+      }
+    });
+    return response.data;
+  },
+
+  async listSoldItems(userId: string, pageable: Pageable) {
+    const response = await axios.get(`${environment.apiUrl}/users/${userId}/sold-items`, {
       params: {
         page: pageable.page,
         size: pageable.size
@@ -28,4 +50,4 @@ const userService = {
 };
 
 export {userService};
-export type {ActiveItem};
+export type {ActiveItem, SoldItem};
