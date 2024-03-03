@@ -1,7 +1,7 @@
 ﻿import {classNames} from "../../utils/tailwind/class-names.utils.ts";
 import {ProfilePageActiveSection} from "./profile.page.active.section.tsx";
 import {ProfilePageSoldSection} from "./profile.page.sold.section.tsx";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {ProfilePageBidsSection} from "./profile.page.bids.section.tsx";
 
 const tabs = [
@@ -14,6 +14,11 @@ export const ProfilePage = () => {
   const {section} = useParams();
   const ActiveTabComponent = tabs.find((tab) => tab.href === section)?.Component;
   const activeTab = tabs.find((tab) => tab.href === section);
+  const navigate = useNavigate();
+  
+  const handleAddNewItem = () => {
+    navigate("/profile/add-new-item");
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-24">
@@ -21,6 +26,7 @@ export const ProfilePage = () => {
         <div className="mt-4 relative">
           <div className="flex md:absolute md:right-0 md:bottom-1/2">
             <button
+              onClick={handleAddNewItem}
               type="button"
               className="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
