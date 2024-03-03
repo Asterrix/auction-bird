@@ -8,6 +8,7 @@ import {ProfilePage} from "./profile/profile.page.tsx";
 import {ProfilePageActiveSection} from "./profile/profile.page.active.section.tsx";
 import {ProfilePageSoldSection} from "./profile/profile.page.sold.section.tsx";
 import {ProfilePageBidsSection} from "./profile/profile.page.bids.section.tsx";
+import {AddItemPage} from "./add-item/add-item.page.tsx";
 
 export const ROUTER = createBrowserRouter([
   {
@@ -47,5 +48,9 @@ export const ROUTER = createBrowserRouter([
         Component: ProfilePageBidsSection
       }
     ]
+  },
+  {
+    path: "/profile/add-new-item",
+    Component: AddItemPage
   }
 ]);
