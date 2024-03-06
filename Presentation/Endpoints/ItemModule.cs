@@ -1,4 +1,7 @@
-﻿using Application.Features.Items.Mapper;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Application.Features.Items.Commands.CreateItem;
+using Application.Features.Items.Mapper;
 using Application.Features.Items.Queries.FindItem;
 using Application.Features.Items.Queries.ListItems;
 using Application.Pagination;
@@ -15,6 +18,7 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
     {
         app.MapGet("items", ListItems);
         app.MapGet("items/{id:guid}", FindItem);
+        app.MapPost("items", CreateItem);
     }
 
     private static async Task<IResult> ListItems(
@@ -44,5 +48,32 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
             },
             Results.NotFound("Item not found.")
         );
+    }
+    
+    private static async Task<IResult> CreateItem(ISender sender, HttpContext context, HttpRequest request)
+    {
+        string idToken = context.Request.Cookies["idToken"];
+        if (string.IsNullOrEmpty(idToken))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Results.Unauthorized();
+        }
+        
+        JwtSecurityTokenHandler handler = new();
+        JwtSecurityToken? token = handler.ReadJwtToken(idToken);
+
+        string userId = token.Claims.First(claim => claim.Type == "sub").Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Results.Unauthorized();
+        }
+        
+        IFormCollection form = await request.ReadFormAsync();
+        CreateItemDto createItemDto = form.ToCreateItemDto(userId);
+        
+        await sender.Send(new CreateItemCommand(createItemDto));
+
+        return Results.Created($"/items/{0}", 0);
     }
 }

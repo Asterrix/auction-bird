@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Json;
 using Amazon;
 using Amazon.CognitoIdentityProvider;
 using Amazon.Extensions.NETCore.Setup;
@@ -9,6 +10,7 @@ using Application.Features.Items.Queries.ListItems;
 using Application.Filtration;
 using Application.Specification;
 using Domain.Items;
+using Firebase.Storage;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,6 +26,7 @@ public static class DependencyInjection
         services.ConfigureFluentValidation();
         services.ConfigureAwsCognito();
         services.ConfigureHttpContextAccessor();
+        services.ConfigureFirebaseStorage();
         services.ConfigureItems();
     }
 
@@ -56,7 +59,24 @@ public static class DependencyInjection
     {
         services.AddHttpContextAccessor();
     }
+    
+    private static void ConfigureFirebaseStorage(this IServiceCollection services)
+    {
+        string bucket = Environment.GetEnvironmentVariable("FIREBASE_STORAGE_BUCKET") ??
+                        throw new InvalidOperationException("FIREBASE_STORAGE_BUCKET is not set");
 
+        string key = File
+            .ReadAllText("env/firebase.json")
+            .Replace("\n", "");
+
+        FirebaseStorage storage = new(bucket, new FirebaseStorageOptions
+        {
+            AuthTokenAsyncFactory = () => Task.FromResult(key)
+        });
+        
+        services.AddSingleton(storage);
+    }
+    
     private static void ConfigureItems(this IServiceCollection services)
     {
         services.AddTransient<ICacheKeyBuilder<ListItemsQuery>, ListItemsCacheKeyBuilder>();

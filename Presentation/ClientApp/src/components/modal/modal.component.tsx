@@ -1,12 +1,18 @@
 ﻿import {Dialog, Transition} from "@headlessui/react";
 import React, {Fragment, useState} from "react";
 
-export const Modal: React.FC<{ children: React.ReactNode }> = ({children}) => {
+export const Modal: React.FC<{ children: React.ReactNode, disableClose?: boolean }> = ({children, disableClose}) => {
   const [open, setOpen] = useState(true);
 
+  const handleClose = () => {
+    if (!disableClose) {
+      setOpen(false);
+    }
+  }
+  
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={setOpen}>
+      <Dialog as="div" className="relative z-50" onClose={handleClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -30,7 +36,7 @@ export const Modal: React.FC<{ children: React.ReactNode }> = ({children}) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white transition-all">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg transition-all">
                 {children}
               </Dialog.Panel>
             </Transition.Child>
