@@ -21,4 +21,8 @@ public interface IItemRepository
     Task<Option<Item>> FindByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default);
+    
+    Task<bool> CreateAsync(
+        Item item,
+        CancellationToken cancellationToken = default);
 }

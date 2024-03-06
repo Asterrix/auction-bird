@@ -26,6 +26,17 @@ interface ItemInfo {
   }[];
 }
 
+type CreateItem = {
+  name: string;
+  category: string;
+  subcategory: string;
+  description: string;
+  initialPrice: number;
+  startTime: Date;
+  endTime: Date;
+  images: File[];
+}
+
 interface Param {
   page: number;
   size: number;
@@ -49,7 +60,29 @@ export const itemService = {
   async getItem(id: string) {
     const response = await axios.get(`${environment.apiUrl}/items/${id}`);
     return response.data;
+  },
+  
+  async createItem(item: CreateItem){
+    const formData = new FormData();
+    formData.append("name", item.name);
+    formData.append("category", item.category);
+    formData.append("subcategory", item.subcategory);
+    formData.append("description", item.description);
+    formData.append("initialPrice", item.initialPrice.toString());
+    formData.append("startTime", item.startTime.toISOString());
+    formData.append("endTime", item.endTime.toISOString());
+    item.images.forEach((image) => formData.append("images", image));
+    
+    const response = await axios.postForm(`${environment.apiUrl}/items`, formData, {
+      withCredentials: true,
+      headers: {
+        "Access-Control-Allow-Origin": environment.apiUrl,
+        "Access-Control-Allow-Credentials": "true",
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
   }
 };
 
-export type {ItemSummary, ItemInfo};
+export type {ItemSummary, ItemInfo, CreateItem};

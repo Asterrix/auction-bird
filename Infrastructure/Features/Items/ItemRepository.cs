@@ -68,4 +68,10 @@ public sealed class ItemRepository(DatabaseContext context) : IItemRepository
 
         return item;
     }
+
+    public async Task<bool> CreateAsync(Item item, CancellationToken cancellationToken = default)
+    {
+        await context.Items.AddAsync(item, cancellationToken);
+        return await context.SaveChangesAsync(cancellationToken) > 0;
+    }
 }

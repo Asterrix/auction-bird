@@ -20,7 +20,7 @@ builder.Services.AddCarter();
 // CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "ClientPolicy",
+    options.AddPolicy("ClientPolicy",
         policyBuilder =>
         {
             policyBuilder.WithOrigins("http://localhost:3000")
@@ -43,6 +43,8 @@ app.UseHttpsRedirection();
 app.UseMiddleware<AmazonExceptionMiddleware>();
 app.UseMiddleware<TokenMiddleware>();
 app.UseMiddleware<ValidationExceptionMiddleware>();
+app.UseMiddleware<FirebaseStorageExceptionMiddleware>();
+app.UseMiddleware<NotFoundExceptionMiddleware>();
 app.MapCarter();
 app.UseSerilogRequestLogging();
 
