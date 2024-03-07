@@ -12,10 +12,14 @@ public record ItemSummary(
 
 public record ItemInfo(
     Guid Id,
+    string OwnerId,
     string Name,
     string Description,
     decimal CurrentPrice,
-    string TimeLeft,
+    bool AuctionStarted,
+    bool AuctionFinished,
+    string TimeTillStart,
+    string TimeTillEnd,
     bool IsActive,
     List<ItemImage> Images);
 
@@ -47,10 +51,14 @@ public static class ItemMapper
     {
         return new ItemInfo(
             itemQueryResponse.Item.Id,
+            itemQueryResponse.Item.OwnerId,
             itemQueryResponse.Item.Name,
             itemQueryResponse.Item.Description,
             itemQueryResponse.CurrentPrice,
-            itemQueryResponse.TimeRemaining,
+            itemQueryResponse.AuctionStarted,
+            itemQueryResponse.AuctionFinished,
+            itemQueryResponse.TimeTillStart,
+            itemQueryResponse.TimeTillEnd,
             itemQueryResponse.Item.IsActive,
             itemQueryResponse.Item.Images);
     }

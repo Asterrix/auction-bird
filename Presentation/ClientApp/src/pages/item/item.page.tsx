@@ -154,15 +154,26 @@ export const ItemPage = () => {
                     <div className="grid grid-cols-1 gap-1">
                       <h2 className="font-medium text-3xl text-gray-900">Auction Details</h2>
 
-                      <div className="space-y-6 font-medium text-xl">
+                      <div className="space-y-1 font-medium text-xl">
                         <p className="flex gap-1.5 text-indigo-500 font-medium">
                           <span className="text-gray-700">Current price:</span>
                           ${item.currentPrice}
                         </p>
+                        {item.auctionStarted ? (
+                          <p className="flex gap-1.5 text-indigo-500 font-medium">
+                            <span className="text-gray-700">Time Left:</span>
+                            {item.timeTillEnd}
+                          </p>
+                        ) : (
+                          <p className="flex gap-1.5 text-indigo-500 font-medium">
+                            <span className="text-gray-700">Auction begins in:</span>
+                            {item.timeTillStart}
+                          </p>
+                        )}
                       </div>
                     </div>
-                    
-                    {user && item.isActive && item.timeLeft != "Auction finished." && (
+
+                    {user && item.auctionStarted && !item.auctionFinished && (item.ownerId !== user.subject) && (
                       <form className="flex gap-3 items-center" onSubmit={
                         handleSubmit((data) => {
                           submitForm(data);
@@ -208,7 +219,7 @@ export const ItemPage = () => {
                       </form>
                     )}
 
-                    {!user && item.isActive && item.timeLeft != "Auction finished." && (
+                    {!user && item.auctionStarted && !item.auctionFinished && (
                       <button
                         onClick={() => {
                           navigate("/signin", {state: {from: location.pathname}});
