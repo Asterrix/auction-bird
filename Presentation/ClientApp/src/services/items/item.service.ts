@@ -15,10 +15,14 @@ interface ItemSummary {
 
 interface ItemInfo {
   id: string;
+  ownerId: string;
   name: string;
   description: string;
   currentPrice: number;
-  timeLeft: string;
+  timeTillStart: string;
+  timeTillEnd: string;
+  auctionStarted: boolean;
+  auctionFinished: boolean;
   isActive: boolean;
   images: {
     id: number;

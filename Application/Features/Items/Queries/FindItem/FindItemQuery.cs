@@ -4,7 +4,13 @@ using MediatR;
 
 namespace Application.Features.Items.Queries.FindItem;
 
-public record FindItemQueryResponse(Item Item, string TimeRemaining, decimal CurrentPrice);
+public record FindItemQueryResponse(
+    Item Item,
+    string TimeTillStart,
+    string TimeTillEnd,
+    decimal CurrentPrice,
+    bool AuctionStarted,
+    bool AuctionFinished);
 
 public record FindItemQuery(Guid Id) : IRequest<Option<FindItemQueryResponse>>;
 
@@ -26,9 +32,12 @@ public sealed class FindItemQueryHandler : IRequestHandler<FindItemQuery, Option
         return itemOption.Match(
             item =>
             {
-                string timeRemaining = _timeRemainingCalculator.CalculateTimeRemaining(item.EndTime);
+                bool auctionStarted = item.StartTime < DateTime.UtcNow;
+                bool auctionFinished = item.EndTime < DateTime.UtcNow;
+                string timeTillStart = _timeRemainingCalculator.CalculateTimeRemaining(item.StartTime);
+                string timeTillEnd = _timeRemainingCalculator.CalculateTimeRemaining(item.EndTime);
                 decimal currentPrice = item.Bids.Count != 0 ? item.Bids.Max(b => b.Amount) : item.InitialPrice;
-                return new FindItemQueryResponse(item, timeRemaining, currentPrice);
+                return new FindItemQueryResponse(item, timeTillStart, timeTillEnd, currentPrice, auctionStarted, auctionFinished);
             },
             () => Option<FindItemQueryResponse>.None);
     }
