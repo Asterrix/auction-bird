@@ -31,6 +31,11 @@ public sealed class MakeBidCommandHandler : IRequestHandler<MakeBidCommand, bool
         Item item = itemOption.IfNone(() => throw new ValidationException("Item not found."));
         UserType bidder = bidderOption.IfNone(() => throw new ValidationException("Bidder not found."));
 
+        if (item.OwnerId == bidder.Username)
+        {
+            throw new ValidationException("User cannot bid on their own item.");
+        }
+
         if (item.Bids.Count == 0)
         {
             return await MakeInitialBid(bidder, item, request.Bid.BidAmount);
@@ -89,7 +94,8 @@ public sealed class MakeBidCommandHandler : IRequestHandler<MakeBidCommand, bool
 
     private async Task<Option<Item>> FindItem(MakeBidCommand request, CancellationToken cancellationToken)
     {
-        Option<FindItemQueryResponse> item = await _sender.Send(new FindItemQuery(request.Bid.ItemId), cancellationToken);
+        Option<FindItemQueryResponse> item =
+            await _sender.Send(new FindItemQuery(request.Bid.ItemId), cancellationToken);
 
         return item.Match(
             i => i.Item,
