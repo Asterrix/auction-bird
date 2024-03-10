@@ -17,6 +17,10 @@ public interface IItemRepository
         Pageable pageable,
         ISpecification<Item> specification,
         CancellationToken cancellationToken = default);
+    
+    Task<List<Item>> ListAllItemsBySpecificationAsync(
+        Specification<Item> specification,
+        CancellationToken cancellationToken = default);
 
     Task<Option<Item>> FindByIdAsync(
         Guid id,

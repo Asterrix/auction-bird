@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Application.Features.Items.Commands.CreateItem;
 using Application.Features.Items.Mapper;
 using Application.Features.Items.Queries.FindItem;
+using Application.Features.Items.Queries.FindMinMaxPrice;
 using Application.Features.Items.Queries.ListItems;
 using Application.Pagination;
 using Carter;
@@ -19,6 +20,7 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
         app.MapGet("items", ListItems);
         app.MapGet("items/{id:guid}", FindItem);
         app.MapPost("items", CreateItem);
+        app.MapGet("items/min-max-price", FindMinMaxPrice);
     }
 
     private static async Task<IResult> ListItems(
@@ -26,10 +28,15 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
         [FromQuery] int page,
         [FromQuery] int size,
         [FromQuery] string? search = null,
-        [FromQuery] string? categories = null)
+        [FromQuery] string? categories = null,
+        [FromQuery] decimal? minPrice = null,
+        [FromQuery] decimal? maxPrice = null)
     {
         Pageable pageable = Pageable.Of(page, size);
-        Page<ItemSummary> items = await sender.Send(new ListItemsQuery(pageable, search, categories));
+        Option<decimal> minPriceOption = minPrice.Match(Option<decimal>.Some, () => Option<decimal>.None);
+        Option<decimal> maxPriceOption = maxPrice.Match(Option<decimal>.Some, () => Option<decimal>.None);
+        
+        Page<ItemSummary> items = await sender.Send(new ListItemsQuery(pageable, search, categories, minPriceOption, maxPriceOption));
 
         return Results.Ok(items);
     }
@@ -75,5 +82,11 @@ public sealed class ItemModule() : CarterModule(Versioning.Version)
         await sender.Send(new CreateItemCommand(createItemDto));
 
         return Results.Created($"/items/{0}", 0);
+    }
+
+    private static async Task<IResult> FindMinMaxPrice(ISender sender)
+    {
+        FindMinMaxPriceQueryResponse findMinMaxPriceQueryResponse = await sender.Send(new FindMinMaxPriceQuery());
+        return Results.Ok(findMinMaxPriceQueryResponse);
     }
 }

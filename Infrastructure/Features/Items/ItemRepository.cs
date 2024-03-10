@@ -69,6 +69,21 @@ public sealed class ItemRepository(DatabaseContext context) : IItemRepository
         return item;
     }
 
+    public async Task<List<Item>> ListAllItemsBySpecificationAsync(Specification<Item> specification, CancellationToken cancellationToken = default)
+    {
+        Expression<Func<Item, bool>> expression = specification.SpecificationExpression;
+        
+        List<Item> items = await context.Items
+            .Where(expression)
+            .Include(i => i.Category)
+            .Include(i => i.Images)
+            .Include(i => i.Bids)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return items;
+    }
+
     public async Task<bool> CreateAsync(Item item, CancellationToken cancellationToken = default)
     {
         await context.Items.AddAsync(item, cancellationToken);
