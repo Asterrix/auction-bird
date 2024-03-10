@@ -27,6 +27,15 @@ public sealed class ItemFilter : ISpecification<Item>
         return this;
     }
     
+    public ItemFilter WithPriceRange(decimal minPrice, decimal maxPrice)
+    {
+        _specification
+            .And(i => i.InitialPrice >= minPrice && i.InitialPrice <= maxPrice)
+            .Or(i => i.Bids.Any(p => p.Amount >= minPrice && p.Amount <= maxPrice));
+        
+        return this;
+    }
+    
     public ItemFilter IsActive()
     {
         _specification.And(i => i.IsActive);

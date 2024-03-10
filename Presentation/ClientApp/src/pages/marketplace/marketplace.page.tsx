@@ -10,6 +10,9 @@ import {Spinner} from "../../components/spinner/spinner.component.tsx";
 import {ItemSummary} from "../../services/items/item.service.ts";
 import {CategoriesContext} from "../../services/categories/category.provider.tsx";
 import {useNavigate} from "react-router-dom";
+import {PriceRangeSlider} from "./price-range-slider.component.tsx";
+import {classNames} from "../../utils/tailwind/class-names.utils.ts";
+import {useForm} from "react-hook-form";
 
 export const MarketplacePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -23,8 +26,18 @@ export const MarketplacePage = () => {
   const {debouncedSearch} = useContext(SearchContext);
   const [categoriesFilter, setCategoriesFilter] = useState<string[]>([]);
 
+  const {register, watch, setValue} = useForm();
+  const watchMinPrice = watch("minPrice");
+  const watchMaxPrice = watch("maxPrice");
+
+  const [priceRangeLimit, setPriceRangeLimit] = useState<[number, number]>([0, 0]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+
   const [loadingMore, setLoadingMore] = useState(false);
 
+  const [loadingPriceRange, setLoadingPriceRange] = useState(true);
+
+  // Initial load
   useEffect(() => {
     apiService.items.getItems(pageable)
       .then((response) => {
@@ -35,6 +48,20 @@ export const MarketplacePage = () => {
       });
   }, []);
 
+  useEffect(() => {
+    apiService.items.getMinMaxPrice()
+      .then((response) => {
+        setPriceRangeLimit([response.minPrice, response.maxPrice]);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setLoadingPriceRange(false);
+      });
+  }, []);
+
+  // Check for category filter in URL
   useEffect(() => {
     const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
     const category: string | null = urlParams.get("category");
@@ -52,7 +79,35 @@ export const MarketplacePage = () => {
     const queryString = urlParams.toString();
     navigate(`?${queryString}`);
   }, [categoriesFilter]);
-  
+
+  // Price range filter
+  useEffect(() => {
+    pageable.page = 1;
+
+    apiService.items.getItems(pageable, {
+      search: debouncedSearch,
+      categories: categoriesFilter,
+      minPrice: priceRange[0],
+      maxPrice: priceRange[1]
+    })
+      .then((response) => {
+        setItems(response);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [priceRange]);
+
+  const handlePriceRangeChange = (min: number, max: number) => {
+    if (min >= priceRangeLimit[0] && max <= priceRangeLimit[1]) {
+      setPriceRange([min, max]);
+    }
+  };
+
+  useEffect(() => {
+    handlePriceRangeChange(watchMinPrice, watchMaxPrice);
+  }, [watchMinPrice, watchMaxPrice]);
+
   const loadMoreItems = () => {
     setLoadingMore(true);
 
@@ -230,7 +285,59 @@ export const MarketplacePage = () => {
                       )}
                     </Disclosure>
 
-                    {/* More filters... */}
+                    <Disclosure as="div" key={"price-mobile"} className="border-b px-4 py-6">
+                      {({open}) => (
+                        <>
+                          <h3 className="-mx-2 -my-3 flow-root">
+                            <Disclosure.Button
+                              className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
+                              <span className="font-medium text-gray-900">Price</span>
+                              <span className="ml-6 flex items-center">
+                                  {open ? (
+                                    <MinusIcon className="h-5 w-5" aria-hidden="true"/>
+                                  ) : (
+                                    <PlusIcon className="h-5 w-5" aria-hidden="true"/>
+                                  )}
+                                </span>
+                            </Disclosure.Button>
+                          </h3>
+                          <Disclosure.Panel className="grid gap-3 pt-6">
+                            <div className="col-span-full">
+                              <label htmlFor="min-price" className="block text-sm font-medium leading-6 text-gray-900">
+                                Min
+                              </label>
+                              <div className="relative mt-2 rounded-md shadow-sm">
+                                <input
+                                  type="text"
+                                  id="min-price"
+                                  {...register("minPrice", {value: priceRange[0]})}
+                                  className={classNames("ring-gray-300 focus:ring-indigo-600",
+                                    "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+                                  )}
+                                  placeholder="0"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-span-full">
+                              <label htmlFor="max-price" className="block text-sm font-medium leading-6 text-gray-900">
+                                Max
+                              </label>
+                              <div className="relative mt-2 rounded-md shadow-sm">
+                                <input
+                                  type="text"
+                                  id="max-price"
+                                  {...register("maxPrice", {value: priceRange[1]})}
+                                  className={classNames("ring-gray-300 focus:ring-indigo-600",
+                                    "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+                                  )}
+                                  placeholder="100"
+                                />
+                              </div>
+                            </div>
+                          </Disclosure.Panel>
+                        </>
+                      )}
+                    </Disclosure>
                   </form>
                 </Dialog.Panel>
               </Transition.Child>
@@ -330,7 +437,13 @@ export const MarketplacePage = () => {
                   )}
                 </Disclosure>
 
-                {/* More filters... */}
+                {!loadingPriceRange && (
+                  <PriceRangeSlider
+                    currentPriceRange={priceRange}
+                    minPrice={priceRangeLimit[0]}
+                    maxPrice={priceRangeLimit[1]}
+                    setPriceRange={handlePriceRangeChange}/>
+                )}
               </form>
 
               {/* Item grid */}

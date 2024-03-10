@@ -41,11 +41,18 @@ type CreateItem = {
   images: File[];
 }
 
+type MinMaxPrice = {
+  min: number;
+  max: number;
+}
+
 interface Param {
   page: number;
   size: number;
   search?: string;
   categories?: string;
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 export const itemService = {
@@ -54,7 +61,9 @@ export const itemService = {
       page: pageable.page,
       size: pageable.size,
       search: filter?.search || undefined,
-      categories: filter?.categories?.flat().join(",") || undefined
+      categories: filter?.categories?.flat().join(",") || undefined,
+      minPrice: filter?.minPrice || undefined,
+      maxPrice: filter?.maxPrice || undefined,
     };
 
     const response = await axios.get(`${environment.apiUrl}/items`, {params: params});
@@ -86,7 +95,12 @@ export const itemService = {
       },
     });
     return response.data;
+  },
+  
+  async getMinMaxPrice() {
+    const response = await axios.get(`${environment.apiUrl}/items/min-max-price`);
+    return response.data;
   }
 };
 
-export type {ItemSummary, ItemInfo, CreateItem};
+export type {ItemSummary, ItemInfo, CreateItem, MinMaxPrice};
