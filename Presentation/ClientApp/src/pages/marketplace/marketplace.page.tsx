@@ -9,15 +9,16 @@ import {SearchContext} from "../../components/searchbar/search.provider.tsx";
 import {Spinner} from "../../components/spinner/spinner.component.tsx";
 import {ItemSummary} from "../../services/items/item.service.ts";
 import {CategoriesContext} from "../../services/categories/category.provider.tsx";
+import {useNavigate} from "react-router-dom";
 
 export const MarketplacePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-
 
   const {categories} = useContext(CategoriesContext);
   const [items, setItems] = useState<Page<ItemSummary>>();
 
   const pageable: Pageable = {page: 1, size: 9};
+  const navigate = useNavigate();
 
   const {debouncedSearch} = useContext(SearchContext);
   const [categoriesFilter, setCategoriesFilter] = useState<string[]>([]);
@@ -34,6 +35,24 @@ export const MarketplacePage = () => {
       });
   }, []);
 
+  useEffect(() => {
+    const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+    const category: string | null = urlParams.get("category");
+
+    if (category) {
+      setCategoriesFilter([category]);
+    }
+  }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams();
+    categoriesFilter.forEach(category => {
+      urlParams.append("category", category);
+    });
+    const queryString = urlParams.toString();
+    navigate(`?${queryString}`);
+  }, [categoriesFilter]);
+  
   const loadMoreItems = () => {
     setLoadingMore(true);
 
@@ -288,7 +307,7 @@ export const MarketplacePage = () => {
                                           name={`${category.id}[]`}
                                           defaultValue={option.name}
                                           type="checkbox"
-                                          defaultChecked={false}
+                                          defaultChecked={categoriesFilter.includes(option.name)}
                                           onClick={() => toggleCategoryFilter(option.name)}
                                           className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 hover:cursor-pointer"
                                         />

@@ -98,7 +98,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = (
                         >
                           {section.subcategories.map((item) => (
                             <li key={item.name} className="flow-root">
-                              <a href="#" className="-m-2 block p-2 text-gray-500">
+                              <a href={`/marketplace?category=${item.name}`} className="-m-2 block p-2 text-gray-500">
                                 {item.name}
                               </a>
                             </li>

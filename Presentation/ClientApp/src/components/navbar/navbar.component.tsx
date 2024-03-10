@@ -50,7 +50,7 @@ export const NavbarComponent = () => {
     pages: navbarNavigation.pages,
     featured: navbarNavigation.featured
   });
-
+  
   useEffect(() => {
     if (categories) {
       setNavigation({
@@ -170,7 +170,7 @@ export const NavbarComponent = () => {
                                       >
                                         {section.subcategories.map((item) => (
                                           <li key={item.name} className="flex">
-                                            <a href="#" className="hover:text-gray-800">
+                                            <a className="hover:text-gray-800" href={`/marketplace?category=${item.name}`}>
                                               {item.name}
                                             </a>
                                           </li>
