@@ -3,10 +3,12 @@ using Application.Features.Items;
 using Application.Features.Items.Mapper;
 using Application.Pagination;
 using Application.Specification;
+using Domain.Bidding;
 using Domain.Items;
 using Infrastructure.Persistence;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Infrastructure.Features.Items;
 
@@ -71,18 +73,25 @@ public sealed class ItemRepository(DatabaseContext context) : IItemRepository
 
     public async Task<List<Item>> ListAllItemsBySpecificationAsync(Specification<Item> specification, CancellationToken cancellationToken = default)
     {
-        Expression<Func<Item, bool>> expression = specification.SpecificationExpression;
-        
-        List<Item> items = await context.Items
-            .Where(expression)
+        IIncludableQueryable<Item, List<Bid>> query = context.Items
+            .Where(specification.SpecificationExpression)
             .Include(i => i.Category)
             .Include(i => i.Images)
-            .Include(i => i.Bids)
+            .Include(i => i.Bids);
+
+        IOrderedQueryable<Item> orderedQuery = specification.OrderByExpression.Match(
+            Left: l => query.OrderBy(l),
+            Right: r => query.OrderBy(r)
+        );
+
+        List<Item> items = await orderedQuery
+            .Take(specification.TakeExpression)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         return items;
     }
+
 
     public async Task<bool> CreateAsync(Item item, CancellationToken cancellationToken = default)
     {

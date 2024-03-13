@@ -13,7 +13,7 @@ import {AddItemPage} from "./add-item/add-item.page.tsx";
 export const ROUTER = createBrowserRouter([
   {
     path: "/",
-    element: HomePage()
+    Component: HomePage
   },
   {
     path: "/marketplace",
