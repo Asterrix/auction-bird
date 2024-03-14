@@ -7,15 +7,15 @@ using Domain.Items;
 using LanguageExt;
 using MediatR;
 
-namespace Application.Features.User.Queries.ListUserItemsHistory;
+namespace Application.Features.User.Queries.ListUserBiddingHistoryQuery;
 
-public record ListUserBiddingHistory(string Username, DateTime PriorTime) : IRequest<List<Item>>;
+public record ListUserBiddingHistoryQuery(string Username, DateTime PriorTime) : IRequest<List<Item>>;
 
-public sealed class ListUserItemsHistoryQueryHandler(
+public sealed class ListUserBiddingHistoryQueryHandler(
     ISender sender,
-    IItemRepository itemRepository) : IRequestHandler<ListUserBiddingHistory, List<Item>>
+    IItemRepository itemRepository) : IRequestHandler<ListUserBiddingHistoryQuery, List<Item>>
 {
-    public async Task<List<Item>> Handle(ListUserBiddingHistory request, CancellationToken cancellationToken)
+    public async Task<List<Item>> Handle(ListUserBiddingHistoryQuery request, CancellationToken cancellationToken)
     {
         Option<UserType> userOption = await sender.Send(new FindUserQuery(request.Username), cancellationToken);
         UserType user = userOption.IfNone(() => throw new NotFoundException("User not found"));
