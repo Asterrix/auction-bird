@@ -10,9 +10,14 @@ public interface ISpecification<T>
 
 public sealed class Specification<T>
 {
+    private const int MaxTake = short.MaxValue;
+
     public Expression<Func<T, bool>> SpecificationExpression { get; private set; } = _ => true;
-    public Either<Expression<Func<T, bool>>, Expression<Func<T, int>>> OrderByExpression { get; private set; } = Either<Expression<Func<T, bool>>, Expression<Func<T, int>>>.Left(x => true);
-    public int TakeExpression { get; private set; } = 0;
+
+    public Either<Expression<Func<T, bool>>, Expression<Func<T, int>>> OrderByExpression { get; private set; } =
+        Either<Expression<Func<T, bool>>, Expression<Func<T, int>>>.Left(x => true);
+
+    public int TakeExpression { get; private set; } = MaxTake;
 
     private Specification()
     {
@@ -79,7 +84,7 @@ public sealed class Specification<T>
         );
         return this;
     }
-    
+
     public Specification<T> OrderBy(Expression<Func<T, bool>> expression)
     {
         OrderByExpression = Either<Expression<Func<T, bool>>, Expression<Func<T, int>>>.Left(expression);
@@ -91,9 +96,14 @@ public sealed class Specification<T>
         OrderByExpression = Either<Expression<Func<T, bool>>, Expression<Func<T, int>>>.Right(expression);
         return this;
     }
-    
+
     public Specification<T> Take(int count)
     {
+        if (count > MaxTake)
+        {
+            throw new ArgumentOutOfRangeException(nameof(count), "Take count cannot be greater than " + MaxTake);
+        }
+
         TakeExpression = count;
         return this;
     }
