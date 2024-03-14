@@ -3,7 +3,7 @@ using Application.Features.Authentication.Queries;
 using Application.Features.Items;
 using Application.Features.Items.Mapper;
 using Application.Features.Recommendations.Query.CreateRecommendationsRegularUser;
-using Application.Features.User.Queries.ListUserItemsHistory;
+using Application.Features.User.Queries.ListUserBiddingHistoryQuery;
 using Application.Specification;
 using Domain.Exceptions;
 using Domain.Items;
@@ -61,7 +61,7 @@ public sealed class CreateRecommendationsRegisteredUserHandler(ISender sender, I
         Option<UserType> userOption = await sender.Send(new FindUserQuery(username), cancellationToken);
         UserType user = userOption.IfNone(() => throw new NotFoundException("User not found."));
 
-        List<Item> userItems = await sender.Send(new ListUserBiddingHistory(user.Username, priorTime), cancellationToken);
+        List<Item> userItems = await sender.Send(new ListUserBiddingHistoryQuery(user.Username, priorTime), cancellationToken);
         return userItems;
     }
 
