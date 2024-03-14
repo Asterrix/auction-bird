@@ -8,8 +8,7 @@ using MediatR;
 
 namespace Application.Features.Recommendations.Query.CreateRecommendationsRegularUser;
 
-public sealed class
-    CreateRecommendationsRegularUserQueryValidator : AbstractValidator<CreateRecommendationsRegularUserQuery>
+public sealed class CreateRecommendationsRegularUserQueryValidator : AbstractValidator<CreateRecommendationsRegularUserQuery>
 {
     public CreateRecommendationsRegularUserQueryValidator()
     {

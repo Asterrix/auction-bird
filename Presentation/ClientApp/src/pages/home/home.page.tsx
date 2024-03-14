@@ -1,19 +1,27 @@
-﻿import {useEffect, useState} from "react";
+﻿import {useContext, useEffect, useState} from "react";
 import {apiService} from "../../services/api.service.ts";
 import {ItemSummary} from "../../services/items/item.service.ts";
+import {userContext} from "../../services/auth/user.provider.tsx";
 
 export const HomePage = () => {
+  const {user} = useContext(userContext);
+
+  const recommendationsCount = 3;
   const [recommendations, setRecommendations] = useState<ItemSummary[]>([]);
 
   useEffect(() => {
-    apiService.recommendations.recommendationsRegularUser(3)
-      .then((response) => {
-        setRecommendations(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+    if (user) {
+      apiService.recommendations.recommendationsSignedInUser(user.username, recommendationsCount)
+        .then((response) => {
+          setRecommendations(response);
+        });
+    } else {
+      apiService.recommendations.recommendationsRegularUser(recommendationsCount)
+        .then((response) => {
+          setRecommendations(response);
+        });
+    }
+  }, [user]);
 
   return (
     <div className="bg-white pt-12">
@@ -215,38 +223,40 @@ export const HomePage = () => {
         </section>
 
         {/* Featured Section */}
-        <section aria-labelledby="featured-heading">
-          <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
-            <div className="sm:flex sm:items-baseline ">
-              <h2 id="featured-heading" className="text-2xl font-bold tracking-tight text-gray-900">
-                Featured
-              </h2>
-            </div>
+        {recommendations.length > 0 && (
+          <section aria-labelledby="featured-heading">
+            <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
+              <div className="sm:flex sm:items-baseline ">
+                <h2 id="featured-heading" className="text-2xl font-bold tracking-tight text-gray-900">
+                  Featured
+                </h2>
+              </div>
 
-            <div className="mt-6 grid grid-cols-1 gap-y-10 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-0 lg:gap-x-8">
-              {recommendations.map((rec, i) => (
-                <div key={rec.id} className="group relative">
-                  <div
-                    className="h-96 w-full overflow-hidden rounded-lg sm:aspect-h-3 sm:aspect-w-2 group-hover:opacity-75 sm:h-auto">
-                    <img
-                      src={rec.mainImage.imageUrl}
-                      alt={`Image of ${rec.name} number ${i + 1}`}
-                      className="h-full w-full object-cover object-center"
-                    />
+              <div className="mt-6 grid grid-cols-1 gap-y-10 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-0 lg:gap-x-8">
+                {recommendations.map((rec, i) => (
+                  <div key={rec.id} className="group relative">
+                    <div
+                      className="h-96 w-full overflow-hidden rounded-lg sm:aspect-h-3 sm:aspect-w-2 group-hover:opacity-75 sm:h-auto">
+                      <img
+                        src={rec.mainImage.imageUrl}
+                        alt={`Image of ${rec.name} number ${i + 1}`}
+                        className="h-full w-full object-cover object-center"
+                      />
+                    </div>
+                    <h3 className="mt-4 text-xl font-semibold text-gray-900">
+                      <a href={rec.id}>
+                        <span className="absolute inset-0"/>
+                        {rec.name}
+                      </a>
+                    </h3>
+                    <p className="mt-1 font-semibold text-lg text-indigo-500">${rec.initialPrice}</p>
                   </div>
-                  <h3 className="mt-4 text-xl font-semibold text-gray-900">
-                    <a href={rec.id}>
-                      <span className="absolute inset-0"/>
-                      {rec.name}
-                    </a>
-                  </h3>
-                  <p className="mt-1 font-semibold text-lg text-indigo-500">${rec.initialPrice}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-          </div>
-        </section>
+            </div>
+          </section>
+        )}
 
         {/* CTA section */}
         <section aria-labelledby="sale-heading">
