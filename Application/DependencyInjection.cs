@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Text.Json;
 using Amazon;
 using Amazon.CognitoIdentityProvider;
 using Amazon.Extensions.NETCore.Setup;
@@ -13,6 +12,8 @@ using Domain.Items;
 using Firebase.Storage;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Stripe;
+using File = System.IO.File;
 
 namespace Application;
 
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.ConfigureMediatR();
         services.ConfigureFluentValidation();
         services.ConfigureAwsCognito();
+        services.ConfigureStripe();
         services.ConfigureHttpContextAccessor();
         services.ConfigureFirebaseStorage();
         services.ConfigureItems();
@@ -54,12 +56,20 @@ public static class DependencyInjection
                 Credentials = new BasicAWSCredentials(key, secret)
             });
     }
-    
+
+    private static void ConfigureStripe(this IServiceCollection services)
+    {
+        StripeConfiguration.ApiKey = Environment.GetEnvironmentVariable("STRIPE_API_KEY") ??
+                                     throw new InvalidOperationException("STRIPE_API_KEY is not set");
+
+        StripeConfiguration.EnableTelemetry = false;
+    }
+
     private static void ConfigureHttpContextAccessor(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
     }
-    
+
     private static void ConfigureFirebaseStorage(this IServiceCollection services)
     {
         string bucket = Environment.GetEnvironmentVariable("FIREBASE_STORAGE_BUCKET") ??
@@ -73,10 +83,10 @@ public static class DependencyInjection
         {
             AuthTokenAsyncFactory = () => Task.FromResult(key)
         });
-        
+
         services.AddSingleton(storage);
     }
-    
+
     private static void ConfigureItems(this IServiceCollection services)
     {
         services.AddTransient<ICacheKeyBuilder<ListItemsQuery>, ListItemsCacheKeyBuilder>();
