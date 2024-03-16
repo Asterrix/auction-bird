@@ -2,10 +2,12 @@
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Runtime;
 using Application.Features.Authentication.Mapper;
+using Application.Features.Payment.Commands;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 using Serilog;
+using Stripe;
 
 namespace Application.Features.Authentication.Commands.SignUp;
 
@@ -30,7 +32,7 @@ public sealed class SignUpCommandValidator : AbstractValidator<SignUpCommand>
     // Password
     private const byte PasswordMinLength = 8;
     private const byte PasswordMaxLength = 32;
-    
+
     public SignUpCommandValidator()
     {
         RuleFor(u => u.User.FirstName)
@@ -79,7 +81,7 @@ public sealed class SignUpCommandValidator : AbstractValidator<SignUpCommand>
         RuleFor(u => u.User.TermsAndConditionsAccepted)
             .Equal(true)
             .WithMessage("You must accept the terms and conditions to sign up.");
-        
+
         RuleFor(u => u.User.IsOver18)
             .Equal(true)
             .WithMessage("You must be at least 18 years old to sign up.");
@@ -92,22 +94,26 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
 {
     private readonly IAmazonCognitoIdentityProvider _cognitoService;
     private readonly IValidator<SignUpCommand> _validator;
+    private readonly ISender _sender;
 
-    public SignUpCommandHandler(IAmazonCognitoIdentityProvider cognitoService, IValidator<SignUpCommand> validator)
+    public SignUpCommandHandler(IAmazonCognitoIdentityProvider cognitoService, IValidator<SignUpCommand> validator,
+        ISender sender)
     {
         _cognitoService = cognitoService;
         _validator = validator;
+        _sender = sender;
     }
 
     public async Task<bool> Handle(SignUpCommand request, CancellationToken cancellationToken)
     {
         await _validator.ValidateAndThrowAsync(request, cancellationToken);
 
-        bool isUserSignedUp = await SignUpUser(request.User, cancellationToken);
-        bool isUserConfirmed = await ConfirmUser(request.User.Email, cancellationToken);
-        bool isUserAddedToGroup = await AddUserToGroup(request.User.Email, cancellationToken);
+        Customer customer = await CreateCustomer(request.User.Email, cancellationToken);
+        await SignUpUser(request.User, customer.Id, cancellationToken);
+        await ConfirmUser(request.User.Email, cancellationToken);
+        await AddUserToGroup(request.User.Email, cancellationToken);
 
-        return isUserSignedUp && isUserConfirmed && isUserAddedToGroup;
+        return true;
     }
 
     /// <summary>
@@ -116,6 +122,7 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
     /// <param name="request">
     /// Details of the user to be signed up.
     /// </param>
+    /// <param name="customerId">String representation of the customer id.</param>
     /// <param name="cancellationToken">
     /// Cancellation token
     /// </param>
@@ -125,13 +132,14 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
     /// <exception cref="AmazonServiceException">
     /// Throws AmazonServiceException if any exception occurs during the sign-up process.
     /// </exception>
-    private async Task<bool> SignUpUser(SignUpDto request, CancellationToken cancellationToken)
+    private async Task<bool> SignUpUser(SignUpDto request, string customerId, CancellationToken cancellationToken)
     {
         AttributeType firstName = new() { Name = "given_name", Value = request.FirstName };
         AttributeType lastName = new() { Name = "family_name", Value = request.LastName };
         AttributeType email = new() { Name = "email", Value = request.Email };
+        AttributeType customer = new() { Name = "custom:customer_id", Value = customerId };
 
-        List<AttributeType> userAttributes = [firstName, lastName, email];
+        List<AttributeType> userAttributes = [firstName, lastName, email, customer];
 
         SignUpRequest signUpRequest = new()
         {
@@ -222,7 +230,8 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
 
         try
         {
-            Log.Information("Adding user with email: {Email} to group: {GroupName}", email, CognitoConstant.DefaultGroupName);
+            Log.Information("Adding user with email: {Email} to group: {GroupName}", email,
+                CognitoConstant.DefaultGroupName);
             await _cognitoService.AdminAddUserToGroupAsync(addUserToGroupRequest, cancellationToken);
             return true;
         }
@@ -231,6 +240,38 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
             await DeleteUserFallback(email, cancellationToken);
             throw new AmazonServiceException(e.Message);
         }
+    }
+
+    /// <summary>
+    /// Creates Stripe customer for the user.
+    /// Deletes User if any exception occurs during the sign-up process.
+    /// </summary>
+    /// <param name="email">Identifier for the user.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>
+    /// Returns true if the customer is created successfully.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Throws ArgumentException if any exception occurs during the sign-up process.
+    /// </exception>
+    private async Task<Customer> CreateCustomer(string email, CancellationToken cancellationToken)
+    {
+        Customer customer = await _sender.Send(new CreateCustomerCommand(email), cancellationToken);
+        return customer;
+    }
+
+    /// <summary>
+    /// Fallback method to delete customer if any exception occurs during the sign-up process.
+    /// </summary>
+    /// <param name="email">Identifier for the user.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>
+    /// Returns true if the customer is deleted successfully.
+    /// </returns>
+    private async Task<bool> DeleteCustomerFallback(string email, CancellationToken cancellationToken)
+    {
+        bool deleted = await _sender.Send(new DeleteCustomerCommand(email), cancellationToken);
+        return deleted;
     }
 
     /// <summary>
@@ -257,6 +298,7 @@ public class SignUpCommandHandler : IRequestHandler<SignUpCommand, bool>
         {
             Log.Information("Deleting user with email: {Email}", email);
             await _cognitoService.AdminDeleteUserAsync(deleteUserRequest, cancellationToken);
+            await DeleteCustomerFallback(email, cancellationToken);
             return true;
         }
         catch (Exception e)
