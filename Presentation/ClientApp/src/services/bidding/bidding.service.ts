@@ -16,10 +16,15 @@ const biddingService = {
         "Access-Control-Allow-Credentials": "true",
       }
     });
-    
+
+    return response.data;
+  },
+
+  async findHighestBidder(itemId: string) {
+    const response = await axios.get(`${environment.apiUrl}/bids/${itemId}`);
     return response.data;
   }
-}
+};
 
 export type {Bid};
 export {biddingService};

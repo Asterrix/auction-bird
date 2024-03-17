@@ -4,6 +4,7 @@ import {authService} from "./auth/auth.service.ts";
 import {biddingService} from "./bidding/bidding.service.ts";
 import {userService} from "./user/user.service.ts";
 import {recommendationsService} from "./recommendations/recommendations.service.ts";
+import {paymentService} from "./payment/payment.service.ts";
 
 export const apiService = {
   authentication: authService,
@@ -11,5 +12,6 @@ export const apiService = {
   categories: categoryService,
   items: itemService,
   users: userService,
-  recommendations: recommendationsService
+  recommendations: recommendationsService,
+  payments: paymentService
 };

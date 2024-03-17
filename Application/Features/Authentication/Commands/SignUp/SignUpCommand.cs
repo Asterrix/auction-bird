@@ -2,7 +2,8 @@
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Runtime;
 using Application.Features.Authentication.Mapper;
-using Application.Features.Payment.Commands;
+using Application.Features.Payment.Commands.CreateCustomer;
+using Application.Features.Payment.Commands.DeleteCustomer;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
