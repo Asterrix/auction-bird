@@ -3,7 +3,7 @@ using LanguageExt;
 using MediatR;
 using Stripe;
 
-namespace Application.Features.Payment.Commands;
+namespace Application.Features.Payment.Commands.CreateCustomer;
 
 public record CreateCustomerCommand(string Email) : IRequest<Customer>;
 

@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Application.Features.Bidding.Commands;
 using Application.Features.Bidding.Mapper;
+using Application.Features.Bidding.Queries.FindHighestBidder;
 using Carter;
 using MediatR;
 
@@ -11,8 +12,9 @@ public sealed class BidModule() : CarterModule(Versioning.Version)
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("bids", MakeBid);
+        app.MapGet("bids/{itemId:guid}", FindHighestBidder);
     }
-    
+
     private static async Task<bool> MakeBid(ISender sender, HttpContext context)
     {
         string idToken = context.Request.Cookies["idToken"];
@@ -36,5 +38,12 @@ public sealed class BidModule() : CarterModule(Versioning.Version)
         MakeBidDto bid = form.MapToMakeBidDto(userId);
 
         return await sender.Send(new MakeBidCommand(bid));
+    }
+
+    private static async Task<string> FindHighestBidder(ISender sender, Guid itemId)
+    {
+        string highestBidderId = await sender.Send(new FindHighestBidderQuery(itemId));
+
+        return highestBidderId;
     }
 }

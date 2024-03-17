@@ -4,7 +4,7 @@ using LanguageExt;
 using MediatR;
 using Stripe;
 
-namespace Application.Features.Payment.Commands;
+namespace Application.Features.Payment.Commands.DeleteCustomer;
 
 public record DeleteCustomerCommand(string Email) : IRequest<bool>;
 
